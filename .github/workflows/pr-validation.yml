@@ -1,0 +1,28 @@
+name: Pull Request Validation
+
+on:
+  pull_request:
+    branches: [master] # Se ejecuta cuando se crea o actualiza una PR hacia master
+    types: [opened, synchronize]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Check Code Format
+        run: npm run format
+
+      - name: Run Linter
+        run: npm run lint

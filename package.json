@@ -1,0 +1,44 @@
+{
+  "name": "my-boilerplate-meteor-react",
+  "private": true,
+  "scripts": {
+    "start": "meteor run",
+    "clean": "meteor reset && rm -rf .meteor/local node_modules package-lock.json",
+    "lint": "eslint . --ext .js,.jsx",
+    "lint:fix": "eslint . --ext .js,.jsx --fix",
+    "format": "prettier --write \"**/*.{js,jsx,json,css,md}\""
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.23.5",
+    "@swc/helpers": "^0.5.17",
+    "meteor-node-stubs": "^1.2.12",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.4",
+    "@babel/eslint-parser": "^7.28.4",
+    "@babel/preset-react": "^7.27.1",
+    "@eslint/compat": "^1.4.0",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.37.0",
+    "@semantic-release/git": "^10.0.1",
+    "eslint": "^9.37.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "globals": "^16.4.0",
+    "prettier": "^3.6.2",
+    "semantic-release": "^23.0.0"
+  },
+  "meteor": {
+    "mainModule": {
+      "client": "client/main.js",
+      "server": "server/main.js"
+    },
+    "modern": true
+  },
+  "version": "1.0.0"
+}
