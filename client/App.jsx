@@ -1,6 +1,7 @@
 import React from 'react';
 import { version } from '../package.json';
 import MapComponent from './components/Map';
+import Sidebar from './components/Sidebar';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
         <h1 style={{ margin: 0, fontSize: '1.2rem' }}>My Boilerplate Meteor React</h1>
         <p style={{ margin: 0 }}>Version: {version}</p>
       </div>
+      <Sidebar />
       <MapComponent />
     </div>
   );
