@@ -36,11 +36,6 @@ const Sidebar = () => {
     setOpenLayers((prev) => ({ ...prev, [layerName]: !prev[layerName] }));
   };
 
-  const handleToggleVisibility = (layerName, e) => {
-    e.stopPropagation();
-    setVisibleLayers((prev) => ({ ...prev, [layerName]: !prev[layerName] }));
-  };
-
   const layers = [
     {
       name: 'Layer 1',
@@ -58,6 +53,26 @@ const Sidebar = () => {
       sublayers: ['Congestion', 'Incidents'],
     },
   ];
+
+  const handleToggleVisibility = (layerName, e) => {
+    e.stopPropagation();
+
+    const parentLayer = layers.find((l) => l.name === layerName);
+
+    if (parentLayer) {
+      const newVisibility = !visibleLayers[layerName];
+      const newLayerState = { ...visibleLayers, [layerName]: newVisibility };
+
+      // If parent is toggled, toggle all sublayers to match
+      parentLayer.sublayers.forEach((sub) => {
+        newLayerState[sub] = newVisibility;
+      });
+
+      setVisibleLayers(newLayerState);
+    } else {
+      setVisibleLayers((prev) => ({ ...prev, [layerName]: !prev[layerName] }));
+    }
+  };
 
   if (!open) {
     return (
