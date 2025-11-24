@@ -44,4 +44,7 @@ export const sidebarStyles = {
     justifyContent: 'space-between',
     padding: '16px',
   },
+  nestedListItem: {
+    pl: 4,
+  },
 };

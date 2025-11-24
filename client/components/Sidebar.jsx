@@ -16,7 +16,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useLayerStore } from '../stores/layerStore';
-import { sidebarStyles } from '../theme';
+import { sidebarStyles } from '../themes/theme';
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
@@ -86,13 +86,21 @@ const Sidebar = () => {
               <ListItemText
                 primary={layer.name}
                 secondary={visibleLayers[layer.name] ? 'Visible' : 'Hidden'}
+                slotProps={{
+                  primary: {
+                    color: visibleLayers[layer.name] ? 'text.primary' : 'text.disabled',
+                  },
+                  secondary: {
+                    color: visibleLayers[layer.name] ? 'text.secondary' : 'text.disabled',
+                  },
+                }}
               />
               {openLayers[layer.name] ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
             <Collapse in={openLayers[layer.name]} timeout='auto' unmountOnExit>
               <List component='div' disablePadding>
                 {layer.sublayers.map((sublayer) => (
-                  <ListItemButton key={sublayer} sx={{ pl: 4 }}>
+                  <ListItemButton key={sublayer} sx={sidebarStyles.nestedListItem}>
                     <IconButton
                       size='small'
                       onClick={(e) => handleToggleVisibility(sublayer, e)}
@@ -102,7 +110,12 @@ const Sidebar = () => {
                     </IconButton>
                     <ListItemText
                       primary={sublayer}
-                      slotProps={{ primary: { variant: 'body2' } }}
+                      slotProps={{
+                        primary: {
+                          variant: 'body2',
+                          color: visibleLayers[sublayer] ? 'text.primary' : 'text.disabled',
+                        },
+                      }}
                     />
                   </ListItemButton>
                 ))}

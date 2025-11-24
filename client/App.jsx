@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
-import { theme } from './theme';
+import { theme } from './themes/theme';
 import { version } from '../package.json';
 import MapComponent from './components/Map';
 import Sidebar from './components/Sidebar';
