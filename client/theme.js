@@ -2,14 +2,14 @@ import { createTheme } from '@mui/material/styles';
 
 export const theme = createTheme({
   palette: {
+    background: {
+      default: '#f5f5f5',
+    },
     primary: {
       main: '#1976d2',
     },
     secondary: {
       main: '#dc004e',
-    },
-    background: {
-      default: '#f5f5f5',
     },
   },
   typography: {
@@ -19,29 +19,29 @@ export const theme = createTheme({
 
 export const sidebarStyles = {
   collapsed: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-    zIndex: 1000,
-    padding: 1,
     borderRadius: 2,
+    padding: 1,
+    position: 'absolute',
+    right: 20,
+    top: 20,
+    zIndex: 1000,
   },
   expanded: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-    width: 300,
-    maxHeight: 'calc(100vh - 40px)',
-    zIndex: 1000,
+    borderRadius: 2,
     display: 'flex',
     flexDirection: 'column',
-    borderRadius: 2,
+    maxHeight: 'calc(100vh - 40px)',
     overflow: 'hidden',
+    position: 'absolute',
+    right: 20,
+    top: 20,
+    width: 300,
+    zIndex: 1000,
   },
   header: {
+    alignItems: 'center',
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
     padding: '16px',
   },
 };
