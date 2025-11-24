@@ -16,6 +16,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useLayerStore } from '../stores/layerStore';
+import { sidebarStyles } from '../theme';
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
@@ -54,17 +55,7 @@ const Sidebar = () => {
 
   if (!open) {
     return (
-      <Paper
-        elevation={3}
-        sx={{
-          position: 'absolute',
-          top: 20,
-          right: 20,
-          zIndex: 1000,
-          padding: 1,
-          borderRadius: 2,
-        }}
-      >
+      <Paper elevation={3} sx={sidebarStyles.collapsed}>
         <IconButton onClick={() => setOpen(true)} color='primary'>
           <MenuIcon />
         </IconButton>
@@ -73,29 +64,8 @@ const Sidebar = () => {
   }
 
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        position: 'absolute',
-        top: 20,
-        right: 20,
-        width: 300,
-        maxHeight: 'calc(100vh - 40px)',
-        zIndex: 1000,
-        display: 'flex',
-        flexDirection: 'column',
-        borderRadius: 2,
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '16px',
-        }}
-      >
+    <Paper elevation={3} sx={sidebarStyles.expanded}>
+      <div style={sidebarStyles.header}>
         <Typography variant='h6'>Layers</Typography>
         <IconButton onClick={() => setOpen(false)} size='small'>
           <CloseIcon />
