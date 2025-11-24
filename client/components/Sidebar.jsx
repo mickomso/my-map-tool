@@ -100,7 +100,10 @@ const Sidebar = () => {
                     >
                       {visibleLayers[sublayer] ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
-                    <ListItemText primary={sublayer} />
+                    <ListItemText
+                      primary={sublayer}
+                      slotProps={{ primary: { variant: 'body2' } }}
+                    />
                   </ListItemButton>
                 ))}
               </List>
