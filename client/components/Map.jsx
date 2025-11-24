@@ -21,7 +21,7 @@ const MapComponent = () => {
         mapStyle={mapboxSettings.styleURL || 'mapbox://styles/mapbox/streets-v12'}
         mapboxAccessToken={mapboxSettings.accessToken}
       >
-        <NavigationControl position='top-right' />
+        <NavigationControl position='bottom-right' />
       </Map>
     </div>
   );
