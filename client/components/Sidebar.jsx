@@ -8,6 +8,7 @@ import {
   ListItemText,
   Divider,
   Collapse,
+  Box,
 } from '@mui/material';
 import Close from '@mui/icons-material/Close';
 import MenuOpen from '@mui/icons-material/MenuOpen';
@@ -16,7 +17,6 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useLayerStore } from '../stores/layerStore';
-import { sidebarStyles } from '../themes/theme';
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
@@ -55,7 +55,7 @@ const Sidebar = () => {
 
   if (!open) {
     return (
-      <Paper elevation={3} sx={sidebarStyles.collapsed}>
+      <Paper elevation={3} variant='sidebar-collapsed'>
         <IconButton onClick={() => setOpen(true)} color='primary'>
           <MenuOpen />
         </IconButton>
@@ -64,13 +64,20 @@ const Sidebar = () => {
   }
 
   return (
-    <Paper elevation={3} sx={sidebarStyles.expanded}>
-      <div style={sidebarStyles.header}>
+    <Paper elevation={3} variant='sidebar-expanded'>
+      <Box
+        sx={{
+          alignItems: 'center',
+          display: 'flex',
+          justifyContent: 'space-between',
+          p: 2,
+        }}
+      >
         <Typography variant='h6'>Layers</Typography>
         <IconButton onClick={() => setOpen(false)} size='small'>
           <Close />
         </IconButton>
-      </div>
+      </Box>
       <Divider />
       <List sx={{ overflowY: 'auto' }}>
         {layers.map((layer) => (
@@ -100,7 +107,7 @@ const Sidebar = () => {
             <Collapse in={openLayers[layer.name]} timeout='auto' unmountOnExit>
               <List component='div' disablePadding>
                 {layer.sublayers.map((sublayer) => (
-                  <ListItemButton key={sublayer} sx={sidebarStyles.nestedListItem}>
+                  <ListItemButton key={sublayer} variant='nested'>
                     <IconButton
                       size='small'
                       onClick={(e) => handleToggleVisibility(sublayer, e)}
