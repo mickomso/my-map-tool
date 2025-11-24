@@ -9,8 +9,8 @@ import {
   Divider,
   Collapse,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import MenuIcon from '@mui/icons-material/Menu';
+import Close from '@mui/icons-material/Close';
+import MenuOpen from '@mui/icons-material/MenuOpen';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Visibility from '@mui/icons-material/Visibility';
@@ -57,7 +57,7 @@ const Sidebar = () => {
     return (
       <Paper elevation={3} sx={sidebarStyles.collapsed}>
         <IconButton onClick={() => setOpen(true)} color='primary'>
-          <MenuIcon />
+          <MenuOpen />
         </IconButton>
       </Paper>
     );
@@ -68,7 +68,7 @@ const Sidebar = () => {
       <div style={sidebarStyles.header}>
         <Typography variant='h6'>Layers</Typography>
         <IconButton onClick={() => setOpen(false)} size='small'>
-          <CloseIcon />
+          <Close />
         </IconButton>
       </div>
       <Divider />
