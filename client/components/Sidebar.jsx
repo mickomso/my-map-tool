@@ -8,9 +8,10 @@ import {
   ListItemText,
   Divider,
   Collapse,
+  Box,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import MenuIcon from '@mui/icons-material/Menu';
+import Close from '@mui/icons-material/Close';
+import MenuOpen from '@mui/icons-material/MenuOpen';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Visibility from '@mui/icons-material/Visibility';
@@ -54,53 +55,31 @@ const Sidebar = () => {
 
   if (!open) {
     return (
-      <Paper
-        elevation={3}
-        sx={{
-          position: 'absolute',
-          top: 20,
-          right: 20,
-          zIndex: 1000,
-          padding: 1,
-          borderRadius: 2,
-        }}
-      >
+      <Paper elevation={3} variant='sidebar-collapsed'>
         <IconButton onClick={() => setOpen(true)} color='primary'>
-          <MenuIcon />
+          <MenuOpen />
         </IconButton>
       </Paper>
     );
   }
 
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        position: 'absolute',
-        top: 20,
-        right: 20,
-        width: 300,
-        maxHeight: 'calc(100vh - 40px)',
-        zIndex: 1000,
-        display: 'flex',
-        flexDirection: 'column',
-        borderRadius: 2,
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
+    <Paper elevation={3} variant='sidebar-expanded'>
+      <Box
+        sx={{
+          alignItems: 'center',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '16px',
+          p: 2,
         }}
       >
-        <Typography variant='h6'>Layers</Typography>
-        <IconButton onClick={() => setOpen(false)} size='small'>
-          <CloseIcon />
+        <Typography color='primary' variant='h6'>
+          Layers
+        </Typography>
+        <IconButton onClick={() => setOpen(false)} color='primary' size='small'>
+          <Close />
         </IconButton>
-      </div>
+      </Box>
       <Divider />
       <List sx={{ overflowY: 'auto' }}>
         {layers.map((layer) => (
@@ -116,13 +95,21 @@ const Sidebar = () => {
               <ListItemText
                 primary={layer.name}
                 secondary={visibleLayers[layer.name] ? 'Visible' : 'Hidden'}
+                slotProps={{
+                  primary: {
+                    color: visibleLayers[layer.name] ? 'text.primary' : 'text.disabled',
+                  },
+                  secondary: {
+                    color: visibleLayers[layer.name] ? 'text.secondary' : 'text.disabled',
+                  },
+                }}
               />
               {openLayers[layer.name] ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
             <Collapse in={openLayers[layer.name]} timeout='auto' unmountOnExit>
               <List component='div' disablePadding>
                 {layer.sublayers.map((sublayer) => (
-                  <ListItemButton key={sublayer} sx={{ pl: 4 }}>
+                  <ListItemButton key={sublayer} variant='nested'>
                     <IconButton
                       size='small'
                       onClick={(e) => handleToggleVisibility(sublayer, e)}
@@ -130,7 +117,15 @@ const Sidebar = () => {
                     >
                       {visibleLayers[sublayer] ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
-                    <ListItemText primary={sublayer} />
+                    <ListItemText
+                      primary={sublayer}
+                      slotProps={{
+                        primary: {
+                          variant: 'body2',
+                          color: visibleLayers[sublayer] ? 'text.primary' : 'text.disabled',
+                        },
+                      }}
+                    />
                   </ListItemButton>
                 ))}
               </List>
