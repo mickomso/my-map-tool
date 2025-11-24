@@ -2,7 +2,7 @@
   "name": "my-boilerplate-meteor-react",
   "private": true,
   "scripts": {
-    "start": "meteor run",
+    "start": "meteor run --settings settings.json",
     "clean": "meteor reset && rm -rf .meteor/local node_modules package-lock.json",
     "lint": "eslint . --ext .js,.jsx",
     "lint:fix": "eslint . --ext .js,.jsx --fix",
@@ -11,9 +11,11 @@
   "dependencies": {
     "@babel/runtime": "^7.23.5",
     "@swc/helpers": "^0.5.17",
+    "mapbox-gl": "^3.16.0",
     "meteor-node-stubs": "^1.2.12",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-map-gl": "^7.1.7",
     "winston": "^3.17.0"
   },
   "devDependencies": {

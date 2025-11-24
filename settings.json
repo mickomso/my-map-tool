@@ -1,0 +1,13 @@
+{
+  "public": {
+    "mapbox": {
+      "accessToken": "pk.eyJ1IjoibWlndWVsY29tcGFueSIsImEiOiJja3l2ZGFxNHIxdzZpMm9vM2tjZGswcGoyIn0.ZVoPHgPE7WpQk3Et4EJWiQ",
+      "defaultCenter": {
+        "lng": -3.7038,
+        "lat": 40.4168
+      },
+      "defaultZoom": 12,
+      "styleURL": "mapbox://styles/miguelcompany/cltvo4y6v00a101qsedv16hzy"
+    }
+  }
+}
