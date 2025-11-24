@@ -15,22 +15,14 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { useLayerStore } from '../stores/layerStore';
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
   const [openLayers, setOpenLayers] = useState({});
-  const [visibleLayers, setVisibleLayers] = useState({
-    'Layer 1': true,
-    'Layer 2': false,
-    Traffic: true,
-    'Sublayer 1.1': true,
-    'Sublayer 1.2': true,
-    'Sublayer 2.1': true,
-    'Sublayer 2.2': true,
-    'Sublayer 2.3': true,
-    Congestion: true,
-    Incidents: true,
-  });
+
+  const visibleLayers = useLayerStore((state) => state.visibleLayers);
+  const toggleVisibility = useLayerStore((state) => state.toggleVisibility);
 
   const handleToggleLayer = (layerName) => {
     setOpenLayers((prev) => ({ ...prev, [layerName]: !prev[layerName] }));
@@ -56,22 +48,8 @@ const Sidebar = () => {
 
   const handleToggleVisibility = (layerName, e) => {
     e.stopPropagation();
-
     const parentLayer = layers.find((l) => l.name === layerName);
-
-    if (parentLayer) {
-      const newVisibility = !visibleLayers[layerName];
-      const newLayerState = { ...visibleLayers, [layerName]: newVisibility };
-
-      // If parent is toggled, toggle all sublayers to match
-      parentLayer.sublayers.forEach((sub) => {
-        newLayerState[sub] = newVisibility;
-      });
-
-      setVisibleLayers(newLayerState);
-    } else {
-      setVisibleLayers((prev) => ({ ...prev, [layerName]: !prev[layerName] }));
-    }
+    toggleVisibility(layerName, parentLayer ? parentLayer.sublayers : []);
   };
 
   if (!open) {
