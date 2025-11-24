@@ -19,7 +19,6 @@ export const useLayerStore = create((set) => ({
       const newVisibility = !state.visibleLayers[layerName];
       const newLayerState = { ...state.visibleLayers, [layerName]: newVisibility };
 
-      // If it has sublayers, toggle them all to match the parent
       if (sublayers && sublayers.length > 0) {
         sublayers.forEach((sub) => {
           newLayerState[sub] = newVisibility;
