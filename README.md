@@ -1,79 +1,92 @@
-# My Boilerplate Meteor React
+# My Map Tool
 
-A minimal boilerplate for building web applications with Meteor and React.
+A modern web application for visualizing map data, built with Meteor, React, and Mapbox GL.
 
 ## Features
 
-- **Meteor** - Full-stack JavaScript platform
-- **React 18** - Modern UI library
-- **Automated Versioning** - Semantic-release with conventional commits
-- **Code Quality** - ESLint and Prettier
-- **Logging** - Winston logger for server
+- **Interactive Map**: Full-screen map visualization using [Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/api/).
+- **Layer Management**:
+  - Floating sidebar with expandable layer groups.
+  - Toggle visibility for layers and sublayers.
+  - Parent/Child visibility propagation (toggling a parent toggles all children).
+- **State Management**: Powered by [Zustand](https://github.com/pmndrs/zustand) for efficient, global state handling.
+- **UI Components**: Built with [Material UI (MUI)](https://mui.com/) for a polished look and feel.
+- **Configuration**: Easy setup via `settings.json` for Mapbox tokens and default views.
+- **Automated Versioning**: Semantic-release integration.
+
+## Tech Stack
+
+- **Framework**: Meteor v3
+- **Frontend**: React 18
+- **Map Library**: React Map GL (Mapbox wrapper)
+- **State Management**: Zustand
+- **UI Library**: Material UI (MUI) v6
+- **Linting**: ESLint + Prettier
 
 ## Getting Started
 
-```bash
-# Install dependencies
-meteor npm install
+### Prerequisites
 
-# Run development server
-npm start
+- Node.js (v20 recommended)
+- Meteor installed (`npm install -g meteor`)
+- A [Mapbox Access Token](https://account.mapbox.com/)
 
-# Run linter
-npm run lint
+### Installation
+
+1.  Clone the repository.
+2.  Install dependencies:
+
+    ```bash
+    meteor npm install
+    ```
+
+### Configuration
+
+Create or update `settings.json` in the root directory. You **must** provide your Mapbox Access Token here.
+
+```json
+{
+  "public": {
+    "mapbox": {
+      "accessToken": "YOUR_MAPBOX_ACCESS_TOKEN_HERE",
+      "defaultCenter": {
+        "lng": -3.7038,
+        "lat": 40.4168
+      },
+      "defaultZoom": 12,
+      "styleURL": "mapbox://styles/mapbox/streets-v12"
+    }
+  }
+}
 ```
+
+### Running the App
+
+Start the development server with the settings file:
+
+```bash
+npm start
+# OR
+meteor run --settings settings.json
+```
+
+The application will be available at `http://localhost:3000`.
+
+## Project Structure
+
+- `client/` - Client-side code (React components, stores, styles).
+  - `components/` - UI components (Map, Sidebar).
+  - `stores/` - Zustand stores (layerStore).
+  - `imports/` - Shared imports.
+- `server/` - Server-side code.
+- `settings.json` - Configuration file (ignored by git, use example).
 
 ## Versioning
 
-This project uses semantic-release with conventional commits for automated versioning.
+This project uses **semantic-release** with **conventional commits**.
 
-### Commit Message Format
+- `feat:` New feature (Minor version)
+- `fix:` Bug fix (Patch version)
+- `chore:` Maintenance (No version change)
 
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-### Commit Types
-
-- `feat:` - New feature (triggers **minor** version bump: 1.1.0)
-- `fix:` - Bug fix (triggers **patch** version bump: 1.0.1)
-- `docs:` - Documentation changes (no version bump)
-- `style:` - Code style changes (no version bump)
-- `refactor:` - Code refactoring (no version bump)
-- `perf:` - Performance improvements (triggers **patch** version bump)
-- `test:` - Adding or updating tests (no version bump)
-- `chore:` - Maintenance tasks (no version bump)
-- `ci:` - CI/CD changes (no version bump)
-
-### Breaking Changes
-
-To trigger a **major** version bump (2.0.0), include `BREAKING CHANGE:` in the commit footer:
-
-```
-feat: new authentication system
-
-BREAKING CHANGE: authentication API has changed
-```
-
-Or use `!` after the type:
-
-```
-feat!: new authentication system
-```
-
-### Examples
-
-```bash
-# Patch release (1.0.0 -> 1.0.1)
-git commit -m "fix: resolve login issue"
-
-# Minor release (1.0.0 -> 1.1.0)
-git commit -m "feat: add user profile page"
-
-# Major release (1.0.0 -> 2.0.0)
-git commit -m "feat!: redesign API endpoints"
-```
+Example: `git commit -m "feat: add sidebar layer control"`
