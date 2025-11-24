@@ -73,8 +73,10 @@ const Sidebar = () => {
           p: 2,
         }}
       >
-        <Typography variant='h6'>Layers</Typography>
-        <IconButton onClick={() => setOpen(false)} size='small'>
+        <Typography color='primary' variant='h6'>
+          Layers
+        </Typography>
+        <IconButton onClick={() => setOpen(false)} color='primary' size='small'>
           <Close />
         </IconButton>
       </Box>
