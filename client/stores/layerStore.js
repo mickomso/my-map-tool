@@ -13,6 +13,9 @@ export const useLayerStore = create((set) => ({
     Congestion: true,
     Incidents: true,
   },
+  gtfsData: null,
+
+  setGtfsData: (data) => set({ gtfsData: data }),
 
   toggleVisibility: (layerName, sublayers = []) =>
     set((state) => {

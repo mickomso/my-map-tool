@@ -16,11 +16,14 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import DirectionsBus from '@mui/icons-material/DirectionsBus';
 import { useLayerStore } from '../stores/layerStore';
+import GTFSLoader from './GTFSLoader';
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
   const [openLayers, setOpenLayers] = useState({});
+  const [gtfsOpen, setGtfsOpen] = useState(false);
 
   const visibleLayers = useLayerStore((state) => state.visibleLayers);
   const toggleVisibility = useLayerStore((state) => state.toggleVisibility);
@@ -76,9 +79,14 @@ const Sidebar = () => {
         <Typography color='primary' variant='h6'>
           Layers
         </Typography>
-        <IconButton onClick={() => setOpen(false)} color='primary' size='small'>
-          <Close />
-        </IconButton>
+        <Box>
+          <IconButton onClick={() => setGtfsOpen(true)} color='primary' size='small' sx={{ mr: 1 }}>
+            <DirectionsBus />
+          </IconButton>
+          <IconButton onClick={() => setOpen(false)} color='primary' size='small'>
+            <Close />
+          </IconButton>
+        </Box>
       </Box>
       <Divider />
       <List sx={{ overflowY: 'auto' }}>
@@ -133,6 +141,7 @@ const Sidebar = () => {
           </React.Fragment>
         ))}
       </List>
+      <GTFSLoader open={gtfsOpen} onClose={() => setGtfsOpen(false)} />
     </Paper>
   );
 };
