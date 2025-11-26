@@ -5,10 +5,12 @@ import { useTracker } from 'meteor/react-meteor-data';
 import DeckGL from '@deck.gl/react';
 import { ScatterplotLayer } from '@deck.gl/layers';
 import { Stops } from '../../imports/api/gtfs';
+import { useLayerStore } from '../stores/layerStore';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MapComponent = () => {
   const mapboxSettings = Meteor.settings.public?.mapbox || {};
+  const visibleLayers = useLayerStore((state) => state.visibleLayers);
 
   const [viewState, setViewState] = useState({
     longitude: mapboxSettings.defaultCenter?.lng || -3.7038,
@@ -23,29 +25,31 @@ const MapComponent = () => {
   }, []);
 
   // Create deck.gl layers
-  const layers = [
-    new ScatterplotLayer({
-      id: 'gtfs-stops',
-      data: stops,
-      pickable: true,
-      opacity: 0.8,
-      stroked: true,
-      filled: true,
-      radiusScale: 6,
-      radiusMinPixels: 3,
-      radiusMaxPixels: 100,
-      lineWidthMinPixels: 1,
-      getPosition: (d) => [d.stop_lon, d.stop_lat],
-      getRadius: 10,
-      getFillColor: [255, 140, 0],
-      getLineColor: [0, 0, 0],
-      onHover: ({ object }) => {
-        if (object) {
-          console.log('Stop:', object.stop_name);
-        }
-      },
-    }),
-  ];
+  const layers = visibleLayers['GTFS Stops']
+    ? [
+      new ScatterplotLayer({
+        id: 'gtfs-stops',
+        data: stops,
+        pickable: true,
+        opacity: 0.8,
+        stroked: true,
+        filled: true,
+        radiusScale: 6,
+        radiusMinPixels: 3,
+        radiusMaxPixels: 100,
+        lineWidthMinPixels: 1,
+        getPosition: (d) => [d.stop_lon, d.stop_lat],
+        getRadius: 10,
+        getFillColor: [255, 140, 0],
+        getLineColor: [0, 0, 0],
+        onHover: ({ object }) => {
+          if (object) {
+            console.log('Stop:', object.stop_name);
+          }
+        },
+      }),
+    ]
+    : [];
 
   return (
     <div style={{ width: '100%', height: '100vh' }}>

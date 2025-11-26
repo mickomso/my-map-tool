@@ -2,16 +2,7 @@ import { create } from 'zustand';
 
 export const useLayerStore = create((set) => ({
   visibleLayers: {
-    'Layer 1': true,
-    'Layer 2': false,
-    Traffic: true,
-    'Sublayer 1.1': true,
-    'Sublayer 1.2': true,
-    'Sublayer 2.1': true,
-    'Sublayer 2.2': true,
-    'Sublayer 2.3': true,
-    Congestion: true,
-    Incidents: true,
+    'GTFS Stops': true,
   },
   gtfsData: null,
 
@@ -19,15 +10,24 @@ export const useLayerStore = create((set) => ({
 
   toggleVisibility: (layerName, sublayers = []) =>
     set((state) => {
-      const newVisibility = !state.visibleLayers[layerName];
-      const newLayerState = { ...state.visibleLayers, [layerName]: newVisibility };
+      const newLayerState = { ...state.visibleLayers };
 
+      // If it's a parent layer with sublayers, toggle all sublayers
       if (sublayers && sublayers.length > 0) {
+        const allSublayersVisible = sublayers.every((sub) => state.visibleLayers[sub]);
+        const newVisibility = !allSublayersVisible;
         sublayers.forEach((sub) => {
           newLayerState[sub] = newVisibility;
         });
+      } else {
+        // Toggle individual sublayer
+        newLayerState[layerName] = !state.visibleLayers[layerName];
       }
 
       return { visibleLayers: newLayerState };
     }),
+
+  isParentLayerVisible: (sublayers) => (state) => {
+    return sublayers.some((sub) => state.visibleLayers[sub]);
+  },
 }));

@@ -34,21 +34,15 @@ const Sidebar = () => {
 
   const layers = [
     {
-      name: 'Layer 1',
-      status: 'Visible',
-      sublayers: ['Sublayer 1.1', 'Sublayer 1.2'],
-    },
-    {
-      name: 'Layer 2',
-      status: 'Hidden',
-      sublayers: ['Sublayer 2.1', 'Sublayer 2.2', 'Sublayer 2.3'],
-    },
-    {
-      name: 'Traffic',
-      status: 'Enabled',
-      sublayers: ['Congestion', 'Incidents'],
+      name: 'GTFS',
+      sublayers: ['GTFS Stops'],
     },
   ];
+
+  // Check if parent layer should be visible (any sublayer is visible)
+  const isParentVisible = (layer) => {
+    return layer.sublayers.some((sub) => visibleLayers[sub]);
+  };
 
   const handleToggleVisibility = (layerName, e) => {
     e.stopPropagation();
@@ -91,38 +85,27 @@ const Sidebar = () => {
       <Divider />
       <List sx={{ overflowY: 'auto' }}>
         {layers.map((layer) => (
-          <React.Fragment key={layer.name}>
+          <Box key={layer.name}>
             <ListItemButton onClick={() => handleToggleLayer(layer.name)}>
               <IconButton
                 size='small'
                 onClick={(e) => handleToggleVisibility(layer.name, e)}
                 sx={{ mr: 1 }}
               >
-                {visibleLayers[layer.name] ? <Visibility /> : <VisibilityOff />}
+                {isParentVisible(layer) ? <Visibility /> : <VisibilityOff />}
               </IconButton>
-              <ListItemText
-                primary={layer.name}
-                secondary={visibleLayers[layer.name] ? 'Visible' : 'Hidden'}
-                slotProps={{
-                  primary: {
-                    color: visibleLayers[layer.name] ? 'text.primary' : 'text.disabled',
-                  },
-                  secondary: {
-                    color: visibleLayers[layer.name] ? 'text.secondary' : 'text.disabled',
-                  },
-                }}
-              />
+              <ListItemText primary={layer.name} />
               {openLayers[layer.name] ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
             <Collapse in={openLayers[layer.name]} timeout='auto' unmountOnExit>
               <List component='div' disablePadding>
                 {layer.sublayers.map((sublayer) => (
-                  <ListItemButton key={sublayer} variant='nested'>
-                    <IconButton
-                      size='small'
-                      onClick={(e) => handleToggleVisibility(sublayer, e)}
-                      sx={{ mr: 1 }}
-                    >
+                  <ListItemButton
+                    key={sublayer}
+                    variant='nested'
+                    onClick={(e) => handleToggleVisibility(sublayer, e)}
+                  >
+                    <IconButton size='small' sx={{ mr: 1 }}>
                       {visibleLayers[sublayer] ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                     <ListItemText
@@ -138,7 +121,7 @@ const Sidebar = () => {
                 ))}
               </List>
             </Collapse>
-          </React.Fragment>
+          </Box>
         ))}
       </List>
       <GTFSLoader open={gtfsOpen} onClose={() => setGtfsOpen(false)} />
