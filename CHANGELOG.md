@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/mickomso/my-map-tool/compare/v1.2.0...v1.2.1) (2025-11-26)
+
+
+### Bug Fixes
+
+* Add cancellation support for import process with server-side abort tracking ([d046a64](https://github.com/mickomso/my-map-tool/commit/d046a64b6e5648b627b1ac67fdbcb5c208e316f7))
+
 # [1.2.0](https://github.com/mickomso/my-map-tool/compare/v1.1.0...v1.2.0) (2025-11-26)
 
 
