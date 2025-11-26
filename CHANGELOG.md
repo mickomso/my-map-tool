@@ -1,23 +1,20 @@
 ## [1.2.1](https://github.com/mickomso/my-map-tool/compare/v1.2.0...v1.2.1) (2025-11-26)
 
-
 ### Bug Fixes
 
-* Add cancellation support for import process with server-side abort tracking ([d046a64](https://github.com/mickomso/my-map-tool/commit/d046a64b6e5648b627b1ac67fdbcb5c208e316f7))
+- Add cancellation support for import process with server-side abort tracking ([d046a64](https://github.com/mickomso/my-map-tool/commit/d046a64b6e5648b627b1ac67fdbcb5c208e316f7))
 
 # [1.2.0](https://github.com/mickomso/my-map-tool/compare/v1.1.0...v1.2.0) (2025-11-26)
 
-
 ### Bug Fixes
 
-* Clear button disabled when loading is active ([43a0bd7](https://github.com/mickomso/my-map-tool/commit/43a0bd72379bd4fbd13bb5fd130b93117e5c7426))
-* Fix react-meteor-data dependency constraint ([ea2fa67](https://github.com/mickomso/my-map-tool/commit/ea2fa67d74ab5540c4a02b04bd791b2f3032692f))
-
+- Clear button disabled when loading is active ([43a0bd7](https://github.com/mickomso/my-map-tool/commit/43a0bd72379bd4fbd13bb5fd130b93117e5c7426))
+- Fix react-meteor-data dependency constraint ([ea2fa67](https://github.com/mickomso/my-map-tool/commit/ea2fa67d74ab5540c4a02b04bd791b2f3032692f))
 
 ### Features
 
-* Import GTFS files ([81067a7](https://github.com/mickomso/my-map-tool/commit/81067a7ae54f19c5a2704f22afb8ca422fb91b29))
-* Import GTFS files ([5622331](https://github.com/mickomso/my-map-tool/commit/5622331f41c504d9058cecf516e2de7baa51713e))
+- Import GTFS files ([81067a7](https://github.com/mickomso/my-map-tool/commit/81067a7ae54f19c5a2704f22afb8ca422fb91b29))
+- Import GTFS files ([5622331](https://github.com/mickomso/my-map-tool/commit/5622331f41c504d9058cecf516e2de7baa51713e))
 
 # [1.1.0](https://github.com/mickomso/my-map-tool/compare/v1.0.1...v1.1.0) (2025-11-24)
 
