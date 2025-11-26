@@ -8,8 +8,13 @@ import {
   Button,
   CircularProgress,
   Alert,
+  Box,
+  Typography,
+  Paper,
 } from '@mui/material';
 import { Meteor } from 'meteor/meteor';
+import { useTracker } from 'meteor/react-meteor-data';
+import { AppLogs } from '../../imports/api/logs';
 import { useLayerStore } from '../stores/layerStore';
 
 const GTFSLoader = ({ open, onClose }) => {
@@ -17,6 +22,11 @@ const GTFSLoader = ({ open, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const setGtfsData = useLayerStore((state) => state.setGtfsData);
+
+  const logs = useTracker(() => {
+    Meteor.subscribe('app.logs');
+    return AppLogs.find({}, { sort: { createdAt: -1 }, limit: 50 }).fetch();
+  }, []);
 
   const handleLoad = () => {
     setLoading(true);
@@ -44,8 +54,23 @@ const GTFSLoader = ({ open, onClose }) => {
     });
   };
 
+  const getLogColor = (level) => {
+    switch (level) {
+      case 'error':
+        return '#f44336';
+      case 'warn':
+        return '#ff9800';
+      case 'info':
+        return '#2196f3';
+      case 'debug':
+        return '#4caf50';
+      default:
+        return '#757575';
+    }
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='sm' fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth='md' fullWidth>
       <DialogTitle>Load GTFS Data</DialogTitle>
       <DialogContent>
         <TextField
@@ -58,12 +83,56 @@ const GTFSLoader = ({ open, onClose }) => {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder='https://agency.com/gtfs.zip'
+          sx={{ mb: 2 }}
         />
         {error && (
           <Alert severity='error' sx={{ mt: 2 }}>
             {error}
           </Alert>
         )}
+
+        <Box sx={{ mt: 2 }}>
+          <Typography variant='subtitle2' gutterBottom>
+            Server Logs
+          </Typography>
+          <Paper
+            elevation={1}
+            sx={{
+              bgcolor: '#1e1e1e',
+              color: '#d4d4d4',
+              p: 2,
+              maxHeight: 300,
+              overflowY: 'auto',
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+            }}
+          >
+            {logs.length === 0 ? (
+              <Typography variant='body2' sx={{ color: '#888' }}>
+                No logs yet...
+              </Typography>
+            ) : (
+              logs.map((log, index) => (
+                <Box key={log._id || index} sx={{ mb: 0.5 }}>
+                  <Typography
+                    component='span'
+                    sx={{
+                      color: getLogColor(log.level),
+                      fontWeight: 'bold',
+                      mr: 1,
+                    }}
+                  >
+                    [{log.level.toUpperCase()}]
+                  </Typography>
+                  <Typography component='span' sx={{ color: '#888', mr: 1 }}>
+                    {new Date(log.timestamp).toLocaleTimeString()}
+                  </Typography>
+                  <Typography component='span'>{log.message}</Typography>
+                </Box>
+              ))
+            )}
+          </Paper>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
