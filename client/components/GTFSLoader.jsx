@@ -30,8 +30,21 @@ const GTFSLoader = ({ open, onClose }) => {
 
   const logs = useTracker(() => {
     Meteor.subscribe('app.logs');
-    return AppLogs.find({}, { sort: { createdAt: -1 }, limit: 50 }).fetch();
-  }, []);
+    const fetchedLogs = AppLogs.find({}, { sort: { createdAt: -1 }, limit: 50 }).fetch();
+    
+    // Auto-disable loading when we see a completion or error message
+    if (fetchedLogs.length > 0 && loading) {
+      const lastLog = fetchedLogs[0];
+      const isCompleted = lastLog.message.toLowerCase().includes('completed successfully');
+      const isFailed = lastLog.level === 'error' || lastLog.message.toLowerCase().includes('failed');
+      
+      if (isCompleted || isFailed) {
+        setLoading(false);
+      }
+    }
+    
+    return fetchedLogs;
+  }, [loading]);
 
   const handleLoad = () => {
     setLoading(true);
@@ -65,8 +78,18 @@ const GTFSLoader = ({ open, onClose }) => {
     setError('Import cancelled');
   };
 
+  const handleClose = () => {
+    // Clear logs when closing the dialog
+    Meteor.call('app.clearLogs', (err) => {
+      if (err) {
+        console.error('Failed to clear logs:', err);
+      }
+    });
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='md' fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth='md' fullWidth>
       <DialogTitle>Load GTFS Data</DialogTitle>
       <DialogContent>
         <TextField
@@ -81,53 +104,35 @@ const GTFSLoader = ({ open, onClose }) => {
           placeholder='https://agency.com/gtfs.zip'
           sx={{ mb: 2 }}
         />
-        {error && (
+        {logs.length > 0 &&
+          (() => {
+            const lastLog = logs[0];
+            const isCompleted = lastLog.message.toLowerCase().includes('completed successfully');
+            let severity = 'info';
+
+            if (lastLog.level === 'error' || lastLog.message.toLowerCase().includes('failed')) {
+              severity = 'error';
+            } else if (isCompleted) {
+              severity = 'success';
+            }
+
+            return (
+              <Alert severity={severity} sx={{ mt: 2 }}>
+                {lastLog.message}
+              </Alert>
+            );
+          })()}
+        {error && logs.length === 0 && (
           <Alert severity='error' sx={{ mt: 2 }}>
             {error}
           </Alert>
-        )}
-
-        {logs.length > 0 && (
-          <Box sx={{ mt: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 1 }}>
-              <Typography variant='caption' sx={{ mr: 0.5 }}>
-                {logsExpanded ? 'Hide logs' : 'Show logs'}
-              </Typography>
-              <IconButton size='small' onClick={() => setLogsExpanded(!logsExpanded)}>
-                {logsExpanded ? <ExpandLess /> : <ExpandMore />}
-              </IconButton>
-            </Box>
-            <Collapse in={logsExpanded} timeout={300}>
-              <Paper
-                elevation={1}
-                sx={{
-                  bgcolor: '#1e1e1e',
-                  color: '#d4d4d4',
-                  p: 2,
-                  maxHeight: 300,
-                  overflowY: 'auto',
-                  fontFamily: 'monospace',
-                  fontSize: '0.875rem',
-                }}
-              >
-                {logs.map((log, index) => (
-                  <Box key={log._id || index} sx={{ mb: 0.5 }}>
-                    <Typography component='span' sx={{ color: '#888', mr: 1 }}>
-                      {new Date(log.timestamp).toLocaleTimeString()}
-                    </Typography>
-                    <Typography component='span'>{log.message}</Typography>
-                  </Box>
-                ))}
-              </Paper>
-            </Collapse>
-          </Box>
         )}
       </DialogContent>
       <DialogActions>
         {loading ? (
           <Button onClick={handleCancel}>Cancel</Button>
         ) : (
-          <Button onClick={onClose}>Close</Button>
+          <Button onClick={handleClose}>Close</Button>
         )}
         <Button onClick={handleLoad} disabled={loading || !url || !!error}>
           {loading ? <CircularProgress size={24} /> : 'Load'}
