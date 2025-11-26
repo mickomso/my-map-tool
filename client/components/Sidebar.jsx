@@ -35,7 +35,7 @@ const Sidebar = () => {
   const layers = [
     {
       name: 'GTFS',
-      sublayers: ['GTFS Stops'],
+      sublayers: ['GTFS Stops', 'GTFS Routes'],
     },
   ];
 

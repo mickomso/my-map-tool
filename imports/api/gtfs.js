@@ -25,3 +25,7 @@ export const Shapes = new Mongo.Collection(
   Meteor.isServer ? { _driver: gtfsDriver } : {}
 );
 export const Stops = new Mongo.Collection('stops', Meteor.isServer ? { _driver: gtfsDriver } : {});
+export const Routes = new Mongo.Collection(
+  'routes',
+  Meteor.isServer ? { _driver: gtfsDriver } : {}
+);

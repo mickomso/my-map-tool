@@ -3,6 +3,7 @@ import { create } from 'zustand';
 export const useLayerStore = create((set) => ({
   visibleLayers: {
     'GTFS Stops': true,
+    'GTFS Routes': true,
   },
   gtfsData: null,
 
