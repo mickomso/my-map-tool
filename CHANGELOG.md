@@ -1,3 +1,12 @@
+## [1.3.1](https://github.com/mickomso/my-map-tool/compare/v1.3.0...v1.3.1) (2025-11-26)
+
+
+### Bug Fixes
+
+* add GTFS Routes layer visualization with PathLayer ([757d6bf](https://github.com/mickomso/my-map-tool/commit/757d6bfc831ecae0a8c578b60307bb24f927a9b4))
+* Assign zIndex of each layer according to the sidebar order ([29ece5a](https://github.com/mickomso/my-map-tool/commit/29ece5a7bfc17b82fd118d5d2effdc394d502302))
+* Refactor layer management in Sidebar and store ([b50cd41](https://github.com/mickomso/my-map-tool/commit/b50cd4176ae26e4921131a9ebfd01b9fea5badd7))
+
 # [1.3.0](https://github.com/mickomso/my-map-tool/compare/v1.2.1...v1.3.0) (2025-11-26)
 
 ### Features
