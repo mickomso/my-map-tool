@@ -35,7 +35,17 @@ Meteor.startup(async () => {
   try {
     const version = await Meteor.call('version.get');
     log.info(`Server starting with version ${version}`);
+
+    // Create MongoDB indexes for faster queries
+    const shapesCollection = Shapes.rawCollection();
+    const stopsCollection = Stops.rawCollection();
+
+    await shapesCollection.createIndex({ shape_id: 1, shape_pt_sequence: 1 });
+    await stopsCollection.createIndex({ stop_id: 1 });
+    await stopsCollection.createIndex({ agency_key: 1 });
+
+    log.info('MongoDB indexes created for GTFS collections');
   } catch (error) {
-    log.error(`Error getting version: ${error.message}`);
+    log.error(`Error during startup: ${error.message}`);
   }
 });
