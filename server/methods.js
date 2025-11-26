@@ -13,6 +13,16 @@ const Shapes = new Mongo.Collection('shapes', { _driver: remoteDriver });
 const Stops = new Mongo.Collection('stops', { _driver: remoteDriver });
 
 Meteor.methods({
+  async 'app.clearLogs'() {
+    const { AppLogs } = await import('../imports/api/logs');
+    try {
+      await AppLogs.removeAsync({ gtfs: true });
+    } catch (error) {
+      log.error(`Failed to clear logs: ${error}`);
+      throw new Meteor.Error('clear-logs-failed', error.message);
+    }
+  },
+
   async 'gtfs.importFromUrl'(url) {
     const agencyKey = 'imported_agency';
 

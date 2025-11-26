@@ -28,6 +28,14 @@ const GTFSLoader = ({ open, onClose }) => {
     return AppLogs.find({}, { sort: { createdAt: -1 }, limit: 50 }).fetch();
   }, []);
 
+  const handleClearLogs = () => {
+    Meteor.call('app.clearLogs', (err) => {
+      if (err) {
+        console.error('Failed to clear logs:', err);
+      }
+    });
+  };
+
   const handleLoad = () => {
     setLoading(true);
     setError(null);
@@ -88,38 +96,39 @@ const GTFSLoader = ({ open, onClose }) => {
           </Alert>
         )}
 
-        <Box sx={{ mt: 2 }}>
-          <Typography variant='subtitle2' gutterBottom>
-            Server Logs
-          </Typography>
-          <Paper
-            elevation={1}
-            sx={{
-              bgcolor: '#1e1e1e',
-              color: '#d4d4d4',
-              p: 2,
-              maxHeight: 300,
-              overflowY: 'auto',
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-            }}
-          >
-            {logs.length === 0 ? (
-              <Typography variant='body2' sx={{ color: '#888' }}>
-                No logs yet...
-              </Typography>
-            ) : (
-              logs.map((log, index) => (
+        {logs.length > 0 && (
+          <Box sx={{ mt: 2 }}>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}
+            >
+              <Typography variant='subtitle2'>Server Logs</Typography>
+              <Button size='small' onClick={handleClearLogs}>
+                Clear
+              </Button>
+            </Box>
+            <Paper
+              elevation={1}
+              sx={{
+                bgcolor: '#1e1e1e',
+                color: '#d4d4d4',
+                p: 2,
+                maxHeight: 300,
+                overflowY: 'auto',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+              }}
+            >
+              {logs.map((log, index) => (
                 <Box key={log._id || index} sx={{ mb: 0.5 }}>
                   <Typography component='span' sx={{ color: '#888', mr: 1 }}>
                     {new Date(log.timestamp).toLocaleTimeString()}
                   </Typography>
                   <Typography component='span'>{log.message}</Typography>
                 </Box>
-              ))
-            )}
-          </Paper>
-        </Box>
+              ))}
+            </Paper>
+          </Box>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
