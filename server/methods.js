@@ -34,16 +34,19 @@ Meteor.methods({
 
     try {
       // Use our custom import implementation that uses Meteor's driver
-      const usedAgencyKey = await importGtfsFromUrl({ 
-        url, 
-        agencyKey, 
+      const usedAgencyKey = await importGtfsFromUrl({
+        url,
+        agencyKey,
         driver: remoteDriver,
-        userId: this.userId || 'anonymous'
+        userId: this.userId || 'anonymous',
       });
 
       // Query Shapes
-      const rawShapes = await Shapes.find({ agency_key: usedAgencyKey }, { sort: { shape_id: 1, shape_pt_sequence: 1 } }).fetchAsync();
-      
+      const rawShapes = await Shapes.find(
+        { agency_key: usedAgencyKey },
+        { sort: { shape_id: 1, shape_pt_sequence: 1 } }
+      ).fetchAsync();
+
       // Group shapes by shape_id and convert to GeoJSON
       const shapesMap = rawShapes.reduce((acc, curr) => {
         if (!acc[curr.shape_id]) {
@@ -70,7 +73,7 @@ Meteor.methods({
 
       // Query Stops
       const rawStops = await Stops.find({ agency_key: usedAgencyKey }).fetchAsync();
-      
+
       const stopsGeoJSON = {
         type: 'FeatureCollection',
         features: rawStops.map((stop) => ({
@@ -87,7 +90,7 @@ Meteor.methods({
           },
         })),
       };
-      
+
       return {
         shapes: shapesGeoJSON,
         stops: stopsGeoJSON,

@@ -7,9 +7,9 @@ import './methods';
 Meteor.publish('app.logs', function () {
   const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
   return AppLogs.find(
-    { 
+    {
       createdAt: { $gte: tenMinutesAgo },
-      gtfs: true 
+      gtfs: true,
     },
     { sort: { createdAt: -1 }, limit: 100 }
   );
