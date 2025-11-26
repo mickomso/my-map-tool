@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Map, { NavigationControl } from 'react-map-gl';
 import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
@@ -25,14 +25,16 @@ const MapComponent = () => {
     return Stops.find({}).fetch();
   }, []);
 
-  // Subscribe to shapes data and convert to paths
-  const shapesData = useTracker(() => {
+  // Subscribe to shapes data
+  const shapes = useTracker(() => {
     Meteor.subscribe('gtfs.shapes');
-    const shapes = Shapes.find({}).fetch();
+    return Shapes.find({}).fetch();
+  }, []);
 
-    console.log('Shapes count:', shapes.length);
-    if (shapes.length > 0) {
-      console.log('Sample shape:', shapes[0]);
+  // Process shapes data with memoization
+  const shapesData = useMemo(() => {
+    if (shapes.length === 0) {
+      return [];
     }
 
     // Group shapes by shape_id
@@ -54,56 +56,64 @@ const MapComponent = () => {
         path: shapePoints.map((s) => [s.shape_pt_lon, s.shape_pt_lat]),
       };
     });
-  }, []);
+  }, [shapes]);
 
-  // Create layer configurations
-  const layerConfigs = {
-    'GTFS Stops': () =>
-      new ScatterplotLayer({
-        id: 'gtfs-stops',
-        data: stops,
-        pickable: true,
-        opacity: 0.8,
-        stroked: true,
-        filled: true,
-        radiusScale: 3,
-        radiusMinPixels: 2,
-        radiusMaxPixels: 50,
-        lineWidthMinPixels: 1,
-        getPosition: (d) => [d.stop_lon, d.stop_lat],
-        getRadius: 5,
-        getFillColor: [255, 140, 0],
-        getLineColor: [0, 0, 0],
-        onHover: ({ object }) => {
-          if (object) {
-            console.log('Stop:', object.stop_name);
-          }
-        },
-      }),
-    'GTFS Routes': () =>
-      new PathLayer({
-        id: 'gtfs-routes',
-        data: shapesData,
-        pickable: true,
-        widthScale: 5,
-        widthMinPixels: 1,
-        getPath: (d) => d.path,
-        getColor: [0, 122, 255], // Blue color for routes
-        getWidth: 1.25,
-        onHover: ({ object }) => {
-          if (object) {
-            console.log('Shape ID:', object.shape_id);
-          }
-        },
-      }),
-  };
+  // Create layer configurations (memoized to prevent recreation)
+  const layerConfigs = useMemo(
+    () => ({
+      'GTFS Stops': () =>
+        new ScatterplotLayer({
+          id: 'gtfs-stops',
+          data: stops,
+          pickable: true,
+          opacity: 0.8,
+          stroked: true,
+          filled: true,
+          radiusScale: 3,
+          radiusMinPixels: 2,
+          radiusMaxPixels: 50,
+          lineWidthMinPixels: 1,
+          getPosition: (d) => [d.stop_lon, d.stop_lat],
+          getRadius: 5,
+          getFillColor: [255, 140, 0],
+          getLineColor: [0, 0, 0],
+          onHover: ({ object }) => {
+            if (object) {
+              console.log('Stop:', object.stop_name);
+            }
+          },
+        }),
+      'GTFS Routes': () =>
+        new PathLayer({
+          id: 'gtfs-routes',
+          data: shapesData,
+          pickable: true,
+          widthScale: 5,
+          widthMinPixels: 1,
+          getPath: (d) => d.path,
+          getColor: [0, 122, 255], // Blue color for routes
+          getWidth: 1.25,
+          onHover: ({ object }) => {
+            if (object) {
+              console.log('Shape ID:', object.shape_id);
+            }
+          },
+        }),
+    }),
+    [stops, shapesData]
+  );
 
   // Create deck.gl layers in reverse order (top of sidebar renders on top of map)
-  const layers = [...layerOrder]
-    .reverse()
-    .filter((layerName) => visibleLayers[layerName])
-    .map((layerName) => layerConfigs[layerName]())
-    .filter(Boolean);
+  const layers = useMemo(
+    () =>
+      [...layerOrder]
+        .reverse()
+        .filter((layerName) => visibleLayers[layerName])
+        .map((layerName) => layerConfigs[layerName]())
+        .filter(Boolean),
+    [layerOrder, visibleLayers, layerConfigs]
+  );
+
   return (
     <div style={{ width: '100%', height: '100vh' }}>
       <DeckGL
