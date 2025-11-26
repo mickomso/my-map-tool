@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { MongoInternals } from 'meteor/mongo';
-import { importGtfsFromUrl } from './gtfs-import';
+import { importGtfsFromUrl, setImportAborted } from './gtfs-import';
 import { log } from '../utils/logger';
 
 // Connect to the GTFS database
@@ -23,12 +23,23 @@ Meteor.methods({
     }
   },
 
+  'gtfs.cancelImport'() {
+    // Set abort flag for this user
+    setImportAborted(this.userId || 'anonymous');
+    log.info(`GTFS import cancellation requested by user ${this.userId || 'anonymous'}`);
+  },
+
   async 'gtfs.importFromUrl'(url) {
     const agencyKey = 'imported_agency';
 
     try {
       // Use our custom import implementation that uses Meteor's driver
-      const usedAgencyKey = await importGtfsFromUrl({ url, agencyKey, driver: remoteDriver });
+      const usedAgencyKey = await importGtfsFromUrl({ 
+        url, 
+        agencyKey, 
+        driver: remoteDriver,
+        userId: this.userId || 'anonymous'
+      });
 
       // Query Shapes
       const rawShapes = await Shapes.find({ agency_key: usedAgencyKey }, { sort: { shape_id: 1, shape_pt_sequence: 1 } }).fetchAsync();

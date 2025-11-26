@@ -55,19 +55,14 @@ const GTFSLoader = ({ open, onClose }) => {
     });
   };
 
-  const getLogColor = (level) => {
-    switch (level) {
-      case 'error':
-        return '#f44336';
-      case 'warn':
-        return '#ff9800';
-      case 'info':
-        return '#2196f3';
-      case 'debug':
-        return '#4caf50';
-      default:
-        return '#757575';
-    }
+  const handleCancel = () => {
+    Meteor.call('gtfs.cancelImport', (err) => {
+      if (err) {
+        console.error('Failed to cancel import:', err);
+      }
+    });
+    setLoading(false);
+    setError('Import cancelled');
   };
 
   return (
@@ -129,7 +124,11 @@ const GTFSLoader = ({ open, onClose }) => {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        {loading ? (
+          <Button onClick={handleCancel}>Cancel</Button>
+        ) : (
+          <Button onClick={onClose}>Close</Button>
+        )}
         <Button onClick={handleLoad} disabled={loading || !url || !!error}>
           {loading ? <CircularProgress size={24} /> : 'Load'}
         </Button>

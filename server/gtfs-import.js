@@ -7,6 +7,9 @@ import AdmZip from 'adm-zip';
 import { parse } from 'csv-parse';
 import { gtfsLog } from '../utils/logger';
 
+// Track active GTFS imports and their abort status
+const activeImports = new Map();
+
 // Standard GTFS Filenames and their collection names
 // Based on gtfs@0.8.2 definitions
 const filenames = [
@@ -38,7 +41,19 @@ const floatFields = [
   'price', 'shape_dist_traveled', 'shape_pt_lat', 'shape_pt_lon', 'stop_lat', 'stop_lon'
 ];
 
-export const importGtfsFromUrl = async ({ url, agencyKey, driver }) => {
+export const setImportAborted = (userId) => {
+  activeImports.set(userId, true);
+};
+
+export const clearImportAborted = (userId) => {
+  activeImports.delete(userId);
+};
+
+const isAborted = (userId) => {
+  return activeImports.get(userId) === true;
+};
+
+export const importGtfsFromUrl = async ({ url, agencyKey, driver, userId }) => {
   const tmpDir = path.join(os.tmpdir(), `gtfs-${Date.now()}`);
   const zipPath = path.join(tmpDir, 'latest.zip');
 
@@ -55,6 +70,12 @@ export const importGtfsFromUrl = async ({ url, agencyKey, driver }) => {
     
     const buffer = await response.arrayBuffer();
     fs.writeFileSync(zipPath, Buffer.from(buffer));
+
+    // Check if import was cancelled
+    if (userId && isAborted(userId)) {
+      gtfsLog.info('Import cancelled by user');
+      throw new Error('Import cancelled');
+    }
 
     // 3. Unzip
     gtfsLog.info('Unzipping...');
@@ -93,6 +114,12 @@ export const importGtfsFromUrl = async ({ url, agencyKey, driver }) => {
     const db = mongoConnection.db;
 
     for (const fileInfo of filenames) {
+      // Check if import was cancelled
+      if (userId && isAborted(userId)) {
+        gtfsLog.info('Import cancelled by user');
+        throw new Error('Import cancelled');
+      }
+
       const filePath = path.join(tmpDir, `${fileInfo.fileNameBase}.txt`);
       if (!fs.existsSync(filePath)) {
         gtfsLog.info(`Skipping ${fileInfo.fileNameBase}.txt (not found)`);
@@ -164,6 +191,10 @@ export const importGtfsFromUrl = async ({ url, agencyKey, driver }) => {
     gtfsLog.error(`GTFS Import failed: ${error}`);
     throw error;
   } finally {
+    // Clear abort flag
+    if (userId) {
+      clearImportAborted(userId);
+    }
     // Cleanup
     try {
       fs.rmSync(tmpDir, { recursive: true, force: true });
