@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/mickomso/my-map-tool/compare/v1.2.1...v1.3.0) (2025-11-26)
+
+
+### Features
+
+* add deck.gl layer to display GTFS stops on map ([59bf351](https://github.com/mickomso/my-map-tool/commit/59bf3511c4505ae4b8eb25e05b47206e78e6388f))
+
 ## [1.2.1](https://github.com/mickomso/my-map-tool/compare/v1.2.0...v1.2.1) (2025-11-26)
 
 ### Bug Fixes
