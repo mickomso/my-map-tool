@@ -55,7 +55,6 @@ const GTFSLoader = ({ open, onClose }) => {
       }
 
       setGtfsData(res);
-      onClose();
     });
   };
 
@@ -102,7 +101,7 @@ const GTFSLoader = ({ open, onClose }) => {
               sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}
             >
               <Typography variant='subtitle2'>Server Logs</Typography>
-              <Button size='small' onClick={handleClearLogs}>
+              <Button size='small' onClick={handleClearLogs} disabled={loading}>
                 Clear
               </Button>
             </Box>
@@ -131,8 +130,8 @@ const GTFSLoader = ({ open, onClose }) => {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleLoad} disabled={loading || !url}>
+        <Button onClick={onClose}>Close</Button>
+        <Button onClick={handleLoad} disabled={loading || !url || !!error}>
           {loading ? <CircularProgress size={24} /> : 'Load'}
         </Button>
       </DialogActions>
