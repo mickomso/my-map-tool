@@ -11,6 +11,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 const MapComponent = () => {
   const mapboxSettings = Meteor.settings.public?.mapbox || {};
   const visibleLayers = useLayerStore((state) => state.visibleLayers);
+  const layerOrder = useLayerStore((state) => state.layerOrder);
 
   const [viewState, setViewState] = useState({
     longitude: mapboxSettings.defaultCenter?.lng || -3.7038,
@@ -55,9 +56,9 @@ const MapComponent = () => {
     });
   }, []);
 
-  // Create deck.gl layers
-  const layers = [
-    visibleLayers['GTFS Stops'] &&
+  // Create layer configurations
+  const layerConfigs = {
+    'GTFS Stops': () =>
       new ScatterplotLayer({
         id: 'gtfs-stops',
         data: stops,
@@ -79,7 +80,7 @@ const MapComponent = () => {
           }
         },
       }),
-    visibleLayers['GTFS Routes'] &&
+    'GTFS Routes': () =>
       new PathLayer({
         id: 'gtfs-routes',
         data: shapesData,
@@ -95,7 +96,14 @@ const MapComponent = () => {
           }
         },
       }),
-  ].filter(Boolean);
+  };
+
+  // Create deck.gl layers in reverse order (top of sidebar renders on top of map)
+  const layers = [...layerOrder]
+    .reverse()
+    .filter((layerName) => visibleLayers[layerName])
+    .map((layerName) => layerConfigs[layerName]())
+    .filter(Boolean);
   return (
     <div style={{ width: '100%', height: '100vh' }}>
       <DeckGL

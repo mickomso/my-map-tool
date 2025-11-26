@@ -17,6 +17,8 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import DirectionsBus from '@mui/icons-material/DirectionsBus';
+import ArrowUpward from '@mui/icons-material/ArrowUpward';
+import ArrowDownward from '@mui/icons-material/ArrowDownward';
 import { useLayerStore } from '../stores/layerStore';
 import GTFSLoader from './GTFSLoader';
 
@@ -26,7 +28,10 @@ const Sidebar = () => {
   const [gtfsOpen, setGtfsOpen] = useState(false);
 
   const visibleLayers = useLayerStore((state) => state.visibleLayers);
+  const layerOrder = useLayerStore((state) => state.layerOrder);
   const toggleVisibility = useLayerStore((state) => state.toggleVisibility);
+  const moveLayerUp = useLayerStore((state) => state.moveLayerUp);
+  const moveLayerDown = useLayerStore((state) => state.moveLayerDown);
 
   const handleToggleLayer = (layerName) => {
     setOpenLayers((prev) => ({ ...prev, [layerName]: !prev[layerName] }));
@@ -35,7 +40,7 @@ const Sidebar = () => {
   const layers = [
     {
       name: 'GTFS',
-      sublayers: ['GTFS Stops', 'GTFS Routes'],
+      sublayers: layerOrder,
     },
   ];
 
@@ -99,12 +104,36 @@ const Sidebar = () => {
             </ListItemButton>
             <Collapse in={openLayers[layer.name]} timeout='auto' unmountOnExit>
               <List component='div' disablePadding>
-                {layer.sublayers.map((sublayer) => (
+                {layer.sublayers.map((sublayer, index) => (
                   <ListItemButton
                     key={sublayer}
                     variant='nested'
                     onClick={(e) => handleToggleVisibility(sublayer, e)}
                   >
+                    <Box sx={{ display: 'flex', flexDirection: 'column', mr: 1 }}>
+                      <IconButton
+                        size='small'
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          moveLayerUp(sublayer);
+                        }}
+                        disabled={index === 0}
+                        sx={{ p: 0, minWidth: 0, height: '12px' }}
+                      >
+                        <ArrowUpward sx={{ fontSize: 12 }} />
+                      </IconButton>
+                      <IconButton
+                        size='small'
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          moveLayerDown(sublayer);
+                        }}
+                        disabled={index === layer.sublayers.length - 1}
+                        sx={{ p: 0, minWidth: 0, height: '12px' }}
+                      >
+                        <ArrowDownward sx={{ fontSize: 12 }} />
+                      </IconButton>
+                    </Box>
                     <IconButton size='small' sx={{ mr: 1 }}>
                       {visibleLayers[sublayer] ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
