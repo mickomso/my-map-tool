@@ -3,9 +3,16 @@ import { log } from '../utils/logger';
 import { AppLogs } from '../imports/api/logs';
 import './methods';
 
-// Publish logs to clients
+// Publish logs to clients (last 10 minutes only, GTFS logs only)
 Meteor.publish('app.logs', function () {
-  return AppLogs.find({}, { sort: { createdAt: -1 }, limit: 100 });
+  const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+  return AppLogs.find(
+    { 
+      createdAt: { $gte: tenMinutesAgo },
+      gtfs: true 
+    },
+    { sort: { createdAt: -1 }, limit: 100 }
+  );
 });
 
 Meteor.startup(async () => {

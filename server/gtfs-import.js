@@ -5,7 +5,7 @@ import os from 'os';
 import { fetch } from 'meteor/fetch';
 import AdmZip from 'adm-zip';
 import { parse } from 'csv-parse';
-import { log } from '../utils/logger';
+import { gtfsLog } from '../utils/logger';
 
 // Standard GTFS Filenames and their collection names
 // Based on gtfs@0.8.2 definitions
@@ -49,7 +49,7 @@ export const importGtfsFromUrl = async ({ url, agencyKey, driver }) => {
     }
 
     // 2. Download file
-    log.info(`Downloading GTFS from ${url}...`);
+    gtfsLog.info(`Downloading GTFS from ${url}...`);
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Failed to download GTFS: ${response.statusText}`);
     
@@ -57,7 +57,7 @@ export const importGtfsFromUrl = async ({ url, agencyKey, driver }) => {
     fs.writeFileSync(zipPath, Buffer.from(buffer));
 
     // 3. Unzip
-    log.info('Unzipping...');
+    gtfsLog.info('Unzipping...');
     const zip = new AdmZip(zipPath);
     zip.extractAllTo(tmpDir, true);
 
@@ -78,12 +78,12 @@ export const importGtfsFromUrl = async ({ url, agencyKey, driver }) => {
         for await (const record of parser) {
           if (record.agency_id) {
             finalAgencyKey = record.agency_id;
-            log.info(`Using agency_key from agency.txt: ${finalAgencyKey}`);
+            gtfsLog.info(`Using agency_key from agency.txt: ${finalAgencyKey}`);
           }
           break;
         }
       } catch (e) {
-        log.warn(`Failed to read agency_id from agency.txt, using default key: ${e}`);
+        gtfsLog.warn(`Failed to read agency_id from agency.txt, using default key: ${e}`);
       }
     }
 
@@ -95,11 +95,11 @@ export const importGtfsFromUrl = async ({ url, agencyKey, driver }) => {
     for (const fileInfo of filenames) {
       const filePath = path.join(tmpDir, `${fileInfo.fileNameBase}.txt`);
       if (!fs.existsSync(filePath)) {
-        log.info(`Skipping ${fileInfo.fileNameBase}.txt (not found)`);
+        gtfsLog.info(`Skipping ${fileInfo.fileNameBase}.txt (not found)`);
         continue;
       }
 
-      log.info(`Importing ${fileInfo.fileNameBase}.txt...`);
+      gtfsLog.info(`Importing ${fileInfo.fileNameBase}.txt...`);
       const collection = db.collection(fileInfo.collection);
 
       // Remove existing data for this agency
@@ -157,18 +157,18 @@ export const importGtfsFromUrl = async ({ url, agencyKey, driver }) => {
       }
     }
 
-    log.info('GTFS Import completed successfully.');
+    gtfsLog.info('GTFS Import completed successfully.');
     return finalAgencyKey;
 
   } catch (error) {
-    log.error(`GTFS Import failed: ${error}`);
+    gtfsLog.error(`GTFS Import failed: ${error}`);
     throw error;
   } finally {
     // Cleanup
     try {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     } catch (e) {
-      log.error(`Error cleaning up temp files: ${e}`);
+      gtfsLog.error(`Error cleaning up temp files: ${e}`);
     }
   }
 };

@@ -38,9 +38,6 @@ const GTFSLoader = ({ open, onClose }) => {
         return;
       }
 
-      // Process the result
-      // res.shapes and res.stops are GeoJSON FeatureCollections
-
       if (res.shapes && res.shapes.features.length > 0) {
         console.log('Loaded Shapes:', res.shapes);
       }
@@ -114,16 +111,6 @@ const GTFSLoader = ({ open, onClose }) => {
             ) : (
               logs.map((log, index) => (
                 <Box key={log._id || index} sx={{ mb: 0.5 }}>
-                  <Typography
-                    component='span'
-                    sx={{
-                      color: getLogColor(log.level),
-                      fontWeight: 'bold',
-                      mr: 1,
-                    }}
-                  >
-                    [{log.level.toUpperCase()}]
-                  </Typography>
                   <Typography component='span' sx={{ color: '#888', mr: 1 }}>
                     {new Date(log.timestamp).toLocaleTimeString()}
                   </Typography>
