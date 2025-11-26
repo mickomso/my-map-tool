@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.23.5",
+    "@deck.gl/layers": "^9.2.2",
+    "@deck.gl/react": "^9.2.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.5",
@@ -17,6 +19,7 @@
     "@swc/helpers": "^0.5.17",
     "adm-zip": "^0.5.16",
     "csv-parse": "^6.1.0",
+    "deck.gl": "^9.2.2",
     "gtfs": "^0.8.2",
     "mapbox-gl": "^3.16.0",
     "meteor-node-stubs": "^1.2.12",

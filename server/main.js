@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { log } from '../utils/logger';
 import { AppLogs } from '../imports/api/logs';
+import { Stops } from '../imports/api/gtfs';
 import './methods';
 
 // Publish logs to clients (last 10 minutes only, GTFS logs only)
@@ -13,6 +14,11 @@ Meteor.publish('app.logs', function () {
     },
     { sort: { createdAt: -1 }, limit: 100 }
   );
+});
+
+// Publish GTFS stops
+Meteor.publish('gtfs.stops', function () {
+  return Stops.find({});
 });
 
 Meteor.startup(async () => {
