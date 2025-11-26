@@ -4,9 +4,14 @@ import { MongoInternals } from 'meteor/mongo';
 import { importGtfsFromUrl, setImportAborted } from './gtfs-import';
 import { log } from '../utils/logger';
 
-// Connect to the GTFS database
+// Connect to the GTFS database with connection pool settings
 const GTFS_MONGO_URL = 'mongodb://localhost:27017/gtfs';
-const remoteDriver = new MongoInternals.RemoteCollectionDriver(GTFS_MONGO_URL);
+const remoteDriver = new MongoInternals.RemoteCollectionDriver(GTFS_MONGO_URL, {
+  maxPoolSize: 10,
+  minPoolSize: 2,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+});
 
 // Define collections using the remote driver
 const Shapes = new Mongo.Collection('shapes', { _driver: remoteDriver });
@@ -33,6 +38,14 @@ Meteor.methods({
     const agencyKey = 'imported_agency';
 
     try {
+      // Verify connection before import
+      try {
+        await remoteDriver.mongo.db.admin().ping();
+      } catch (pingError) {
+        log.warn(`MongoDB connection issue, will retry: ${pingError.message}`);
+        // Connection might recover during import
+      }
+
       // Use our custom import implementation that uses Meteor's driver
       const usedAgencyKey = await importGtfsFromUrl({
         url,
