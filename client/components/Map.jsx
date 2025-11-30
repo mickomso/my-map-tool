@@ -147,6 +147,18 @@ const MapComponent = () => {
           <Typography variant='body2' color='text.secondary'>
             <strong>Name:</strong> {hoverInfo.object.stop_name}
           </Typography>
+          {hoverInfo.object.route_codes && hoverInfo.object.route_codes.length > 0 && (
+            <Box sx={{ mt: 1 }}>
+              <Typography variant='body2' color='text.secondary' sx={{ mb: 0.5 }}>
+                <strong>Routes:</strong>
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {hoverInfo.object.route_codes.map((code) => (
+                  <Chip key={code} label={code} size='small' variant='outlined' />
+                ))}
+              </Box>
+            </Box>
+          )}
         </Paper>
       )}
     </div>
