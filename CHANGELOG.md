@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/mickomso/my-map-tool/compare/v1.3.2...v1.4.0) (2025-11-30)
+
+
+### Features
+
+* Store stops and shapes at indexedDB. Use checksum to retrive data ([bcafff8](https://github.com/mickomso/my-map-tool/commit/bcafff85d77c2d3ffbd3dc6a2c34d02c7099b859))
+
 ## [1.3.2](https://github.com/mickomso/my-map-tool/compare/v1.3.1...v1.3.2) (2025-11-26)
 
 
