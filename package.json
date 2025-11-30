@@ -2,7 +2,7 @@
   "name": "my-boilerplate-meteor-react",
   "private": true,
   "scripts": {
-    "start": "meteor run --settings settings.json",
+    "start": "MONGO_URL=mongodb://localhost:27017/gtfs meteor run --settings settings.json",
     "clean": "meteor reset && rm -rf .meteor/local node_modules package-lock.json",
     "lint": "eslint . --ext .js,.jsx",
     "lint:fix": "eslint . --ext .js,.jsx --fix",

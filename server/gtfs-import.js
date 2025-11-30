@@ -84,7 +84,7 @@ const isAborted = (userId) => {
   return activeImports.get(userId) === true;
 };
 
-export const importGtfsFromUrl = async ({ url, agencyKey, driver, userId }) => {
+export const importGtfsFromUrl = async ({ url, agencyKey, userId }) => {
   const tmpDir = path.join(os.tmpdir(), `gtfs-${Date.now()}`);
   const zipPath = path.join(tmpDir, 'latest.zip');
 
@@ -141,11 +141,8 @@ export const importGtfsFromUrl = async ({ url, agencyKey, driver, userId }) => {
       }
     }
 
-    // 4. Import files
-    // Use the provided driver, or fallback to default if not provided (though we expect it)
-    const mongoConnection = driver
-      ? driver.mongo
-      : MongoInternals.defaultRemoteCollectionDriver().mongo;
+    // 4. Import files - use default Meteor MongoDB connection
+    const mongoConnection = MongoInternals.defaultRemoteCollectionDriver().mongo;
     const db = mongoConnection.db;
 
     for (const fileInfo of filenames) {

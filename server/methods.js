@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import crypto from 'crypto';
 import { importGtfsFromUrl, setImportAborted } from './gtfs-import';
 import { log } from '../utils/logger';
-import { gtfsDriver, Shapes, Stops } from '../imports/api/gtfs';
+import { Shapes, Stops } from '../imports/api/gtfs';
 
 // Helper to generate checksum from data
 function generateChecksum(data) {
@@ -84,19 +84,10 @@ Meteor.methods({
     const agencyKey = 'imported_agency';
 
     try {
-      // Verify connection before import
-      try {
-        await gtfsDriver.mongo.db.admin().ping();
-      } catch (pingError) {
-        log.warn(`MongoDB connection issue, will retry: ${pingError.message}`);
-        // Connection might recover during import
-      }
-
-      // Use our custom import implementation that uses Meteor's driver
+      // Use our custom import implementation
       const usedAgencyKey = await importGtfsFromUrl({
         url,
         agencyKey,
-        driver: gtfsDriver,
         userId: this.userId || 'anonymous',
       });
 

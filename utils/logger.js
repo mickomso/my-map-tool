@@ -29,19 +29,23 @@ class MongoTransport extends winston.Transport {
   log(info, callback) {
     setImmediate(() => {
       if (Meteor.isServer) {
+        // Strip all ANSI escape codes (colors, formatting, etc.)
+        // eslint-disable-next-line no-control-regex
+        const stripAnsi = (str) => str.replace(/\x1b\[[0-9;]*m/g, '');
+
         // Get the raw message without any formatting
         let cleanMessage =
           typeof info.message === 'string' ? info.message : JSON.stringify(info.message);
+        cleanMessage = stripAnsi(cleanMessage);
 
-        // Strip all ANSI escape codes (colors, formatting, etc.)
-        // eslint-disable-next-line no-control-regex
-        cleanMessage = cleanMessage.replace(/\x1b\[[0-9;]*m/g, '');
+        // Clean the level too (it may have color codes)
+        const cleanLevel = stripAnsi(info.level);
 
         // Only store logs tagged as gtfs-related
         const isGtfsLog = info.gtfs === true;
 
         AppLogs.insertAsync({
-          level: info.level,
+          level: cleanLevel,
           message: cleanMessage,
           timestamp: new Date(),
           createdAt: new Date(),
