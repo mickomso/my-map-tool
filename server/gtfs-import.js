@@ -22,6 +22,7 @@ const filenames = [
   { fileNameBase: 'frequencies', collection: 'frequencies' },
   { fileNameBase: 'routes', collection: 'routes' },
   { fileNameBase: 'shapes', collection: 'shapes' },
+  { fileNameBase: 'stop_times', collection: 'stoptimes' },
   { fileNameBase: 'stops', collection: 'stops' },
   { fileNameBase: 'transfers', collection: 'transfers' },
   { fileNameBase: 'trips', collection: 'trips' },
@@ -83,6 +84,55 @@ export const clearImportAborted = (userId) => {
 const isAborted = (userId) => {
   return activeImports.get(userId) === true;
 };
+
+// Calculate which routes pass through each stop
+async function calculateRoutesPerStop(db, agencyKey) {
+  const stoptimes = db.collection('stoptimes');
+  const trips = db.collection('trips');
+  const routes = db.collection('routes');
+  const stops = db.collection('stops');
+
+  // Build trip_id -> route_id map
+  const tripsData = await trips.find({ agency_key: agencyKey }).toArray();
+  const tripToRoute = {};
+  tripsData.forEach((trip) => {
+    tripToRoute[trip.trip_id] = trip.route_id;
+  });
+
+  // Build route_id -> route_short_name map
+  const routesData = await routes.find({ agency_key: agencyKey }).toArray();
+  const routeToName = {};
+  routesData.forEach((route) => {
+    routeToName[route.route_id] = route.route_short_name || route.route_id;
+  });
+
+  // Get all stop_times and build stop_id -> route_codes map
+  const stopTimesData = await stoptimes.find({ agency_key: agencyKey }).toArray();
+  const stopRoutes = {};
+
+  stopTimesData.forEach((st) => {
+    const routeId = tripToRoute[st.trip_id];
+    if (routeId) {
+      const routeName = routeToName[routeId];
+      if (!stopRoutes[st.stop_id]) {
+        stopRoutes[st.stop_id] = new Set();
+      }
+      stopRoutes[st.stop_id].add(routeName);
+    }
+  });
+
+  // Update each stop with its route_codes
+  const bulkOps = Object.entries(stopRoutes).map(([stopId, routeSet]) => ({
+    updateOne: {
+      filter: { stop_id: stopId, agency_key: agencyKey },
+      update: { $set: { route_codes: Array.from(routeSet).sort() } },
+    },
+  }));
+
+  if (bulkOps.length > 0) {
+    await stops.bulkWrite(bulkOps);
+  }
+}
 
 export const importGtfsFromUrl = async ({ url, agencyKey, userId }) => {
   const tmpDir = path.join(os.tmpdir(), `gtfs-${Date.now()}`);
@@ -217,6 +267,10 @@ export const importGtfsFromUrl = async ({ url, agencyKey, userId }) => {
         await collection.insertMany(records);
       }
     }
+
+    // Post-import: Calculate routes per stop
+    gtfsLog.info('Calculating routes per stop...');
+    await calculateRoutesPerStop(db, finalAgencyKey);
 
     gtfsLog.info('GTFS Import completed successfully.');
     return finalAgencyKey;
