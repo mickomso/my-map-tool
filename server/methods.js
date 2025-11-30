@@ -1,7 +1,21 @@
 import { Meteor } from 'meteor/meteor';
+import crypto from 'crypto';
 import { importGtfsFromUrl, setImportAborted } from './gtfs-import';
 import { log } from '../utils/logger';
 import { gtfsDriver, Shapes, Stops } from '../imports/api/gtfs';
+
+// Helper to generate checksum from data
+function generateChecksum(data) {
+  const hash = crypto.createHash('md5');
+  hash.update(JSON.stringify(data));
+  return hash.digest('hex');
+}
+
+// Cache for checksums (regenerated on import)
+const checksumCache = {
+  stops: null,
+  shapes: null,
+};
 
 Meteor.methods({
   async 'app.clearLogs'() {
@@ -12,6 +26,52 @@ Meteor.methods({
       log.error(`Failed to clear logs: ${error}`);
       throw new Meteor.Error('clear-logs-failed', error.message);
     }
+  },
+
+  async 'gtfs.getStopsChecksum'() {
+    if (!checksumCache.stops) {
+      const count = await Stops.find({}).countAsync();
+      const sample = await Stops.findOneAsync({}, { sort: { _id: -1 } });
+      checksumCache.stops = generateChecksum({ count, lastId: sample?._id });
+    }
+    return checksumCache.stops;
+  },
+
+  async 'gtfs.getShapesChecksum'() {
+    if (!checksumCache.shapes) {
+      const count = await Shapes.find({}).countAsync();
+      const sample = await Shapes.findOneAsync({}, { sort: { _id: -1 } });
+      checksumCache.shapes = generateChecksum({ count, lastId: sample?._id });
+    }
+    return checksumCache.shapes;
+  },
+
+  async 'gtfs.getStops'() {
+    return await Stops.find({}).fetchAsync();
+  },
+
+  async 'gtfs.getProcessedShapes'() {
+    const rawShapes = await Shapes.find({}).fetchAsync();
+
+    // Group shapes by shape_id
+    const shapesMap = rawShapes.reduce((acc, shape) => {
+      if (!acc[shape.shape_id]) {
+        acc[shape.shape_id] = [];
+      }
+      acc[shape.shape_id].push(shape);
+      return acc;
+    }, {});
+
+    // Sort by sequence and create path data
+    return Object.keys(shapesMap).map((shapeId) => {
+      const shapePoints = shapesMap[shapeId].sort(
+        (a, b) => a.shape_pt_sequence - b.shape_pt_sequence
+      );
+      return {
+        shape_id: shapeId,
+        path: shapePoints.map((s) => [s.shape_pt_lon, s.shape_pt_lat]),
+      };
+    });
   },
 
   'gtfs.cancelImport'() {
@@ -97,6 +157,10 @@ Meteor.methods({
     } catch (error) {
       log.error(`GTFS Import Error: ${error}`);
       throw new Meteor.Error('gtfs-import-failed', error.message);
+    } finally {
+      // Invalidate checksum cache after import
+      checksumCache.stops = null;
+      checksumCache.shapes = null;
     }
   },
 

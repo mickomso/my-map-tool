@@ -13,12 +13,14 @@ import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import { AppLogs } from '../../imports/api/logs';
 import { useLayerStore } from '../stores/layerStore';
+import { clearCache } from '../utils/gtfsCache';
 
 const GTFSLoader = ({ open, onClose }) => {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const setGtfsData = useLayerStore((state) => state.setGtfsData);
+  const triggerDataReload = useLayerStore((state) => state.triggerDataReload);
 
   const logs = useTracker(() => {
     Meteor.subscribe('app.logs');
@@ -47,22 +49,29 @@ const GTFSLoader = ({ open, onClose }) => {
   const handleLoad = () => {
     setLoading(true);
     setError(null);
-    Meteor.call('gtfs.importFromUrl', url, (err, res) => {
-      setLoading(false);
-      if (err) {
-        setError(err.message);
-        return;
-      }
 
-      if (res.shapes && res.shapes.features.length > 0) {
-        console.log('Loaded Shapes:', res.shapes);
-      }
+    // Clear IndexedDB cache before import
+    clearCache().then(() => {
+      Meteor.call('gtfs.importFromUrl', url, (err, res) => {
+        setLoading(false);
+        if (err) {
+          setError(err.message);
+          return;
+        }
 
-      if (res.stops && res.stops.features.length > 0) {
-        console.log('Loaded Stops:', res.stops);
-      }
+        if (res.shapes && res.shapes.features.length > 0) {
+          console.log('Loaded Shapes:', res.shapes);
+        }
 
-      setGtfsData(res);
+        if (res.stops && res.stops.features.length > 0) {
+          console.log('Loaded Stops:', res.stops);
+        }
+
+        setGtfsData(res);
+
+        // Trigger map to reload data from server (cache was cleared)
+        triggerDataReload();
+      });
     });
   };
 
