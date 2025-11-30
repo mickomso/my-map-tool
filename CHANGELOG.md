@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/mickomso/my-map-tool/compare/v1.4.2...v1.4.3) (2025-11-30)
+
+
+### Bug Fixes
+
+* Remove logs when app version changes ([3b8fc37](https://github.com/mickomso/my-map-tool/commit/3b8fc3725fc2fe1af109f75627358c42d06f0b20))
+
 ## [1.4.2](https://github.com/mickomso/my-map-tool/compare/v1.4.1...v1.4.2) (2025-11-30)
 
 ### Bug Fixes
