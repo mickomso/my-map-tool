@@ -29,7 +29,10 @@ async function checkVersionAndClearLogs(currentVersion) {
   }
 
   // Update stored version
-  await Metadata.upsertAsync({ key: 'appVersion' }, { $set: { key: 'appVersion', value: currentVersion } });
+  await Metadata.upsertAsync(
+    { key: 'appVersion' },
+    { $set: { key: 'appVersion', value: currentVersion } }
+  );
 }
 
 Meteor.startup(async () => {
