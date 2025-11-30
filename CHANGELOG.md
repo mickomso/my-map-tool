@@ -1,3 +1,11 @@
+## [1.4.1](https://github.com/mickomso/my-map-tool/compare/v1.4.0...v1.4.1) (2025-11-30)
+
+
+### Bug Fixes
+
+* Remove internal mongo database ([f9f2b70](https://github.com/mickomso/my-map-tool/commit/f9f2b704d690030af49587d11dd04fdc7ade6986))
+* Store correct texts in app_logs ([c31879d](https://github.com/mickomso/my-map-tool/commit/c31879d65475ecf62188d4e39f5818604bdf6eff))
+
 # [1.4.0](https://github.com/mickomso/my-map-tool/compare/v1.3.2...v1.4.0) (2025-11-30)
 
 ### Features
