@@ -3,6 +3,8 @@ import Map, { NavigationControl } from 'react-map-gl';
 import { Meteor } from 'meteor/meteor';
 import DeckGL from '@deck.gl/react';
 import { ScatterplotLayer, PathLayer } from '@deck.gl/layers';
+import { Box, Paper, Typography, Chip } from '@mui/material';
+import DirectionsBus from '@mui/icons-material/DirectionsBus';
 import { useLayerStore } from '../stores/layerStore';
 import { getCachedStops, getCachedShapes } from '../utils/gtfsCache';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -30,6 +32,7 @@ const MapComponent = () => {
 
   const [stops, setStops] = useState([]);
   const [shapesData, setShapesData] = useState([]);
+  const [hoverInfo, setHoverInfo] = useState(null);
 
   // Load data from IndexedDB cache or server
   useEffect(() => {
@@ -67,6 +70,7 @@ const MapComponent = () => {
           getRadius: 5,
           getFillColor: [255, 140, 0],
           getLineColor: [0, 0, 0],
+          onHover: (info) => setHoverInfo(info.object ? { ...info, type: 'stop' } : null),
         }),
       'GTFS Routes': () =>
         new PathLayer({
@@ -111,6 +115,40 @@ const MapComponent = () => {
           <NavigationControl position='bottom-right' />
         </Map>
       </DeckGL>
+
+      {/* Stop Tooltip */}
+      {hoverInfo && hoverInfo.type === 'stop' && (
+        <Paper
+          elevation={3}
+          sx={{
+            position: 'absolute',
+            left: hoverInfo.x + 10,
+            top: hoverInfo.y + 10,
+            p: 1.5,
+            pointerEvents: 'none',
+            zIndex: 1000,
+            width: 250,
+          }}
+        >
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Typography variant='subtitle2' fontWeight='bold'>
+                {hoverInfo.object.agency_key}
+              </Typography>
+              <DirectionsBus color='primary' fontSize='small' />
+            </Box>
+            <Chip label='Stop' size='small' color='primary' />
+          </Box>
+          <Typography variant='body2' color='text.secondary'>
+            <strong>Code:</strong> {hoverInfo.object.stop_code || 'N/A'}
+          </Typography>
+          <Typography variant='body2' color='text.secondary'>
+            <strong>Name:</strong> {hoverInfo.object.stop_name}
+          </Typography>
+        </Paper>
+      )}
     </div>
   );
 };
