@@ -9,6 +9,7 @@ import {
   Divider,
   Collapse,
   Box,
+  CircularProgress,
 } from '@mui/material';
 import Close from '@mui/icons-material/Close';
 import MenuOpen from '@mui/icons-material/MenuOpen';
@@ -32,6 +33,7 @@ const Sidebar = () => {
   const toggleVisibility = useLayerStore((state) => state.toggleVisibility);
   const moveLayerUp = useLayerStore((state) => state.moveLayerUp);
   const moveLayerDown = useLayerStore((state) => state.moveLayerDown);
+  const isLoading = useLayerStore((state) => state.isLoading);
 
   const handleToggleLayer = (layerName) => {
     setOpenLayers((prev) => ({ ...prev, [layerName]: !prev[layerName] }));
@@ -108,7 +110,7 @@ const Sidebar = () => {
                   <ListItemButton
                     key={sublayer}
                     variant='nested'
-                    onClick={(e) => handleToggleVisibility(sublayer, e)}
+                    onClick={(e) => !isLoading && handleToggleVisibility(sublayer, e)}
                   >
                     <Box sx={{ display: 'flex', flexDirection: 'column', mr: 1 }}>
                       <IconButton
@@ -134,8 +136,14 @@ const Sidebar = () => {
                         <ArrowDownward sx={{ fontSize: 12 }} />
                       </IconButton>
                     </Box>
-                    <IconButton size='small' sx={{ mr: 1 }}>
-                      {visibleLayers[sublayer] ? <Visibility /> : <VisibilityOff />}
+                    <IconButton size='small' sx={{ mr: 1 }} disabled={isLoading}>
+                      {isLoading ? (
+                        <CircularProgress size={20} />
+                      ) : visibleLayers[sublayer] ? (
+                        <Visibility />
+                      ) : (
+                        <VisibilityOff />
+                      )}
                     </IconButton>
                     <ListItemText
                       primary={sublayer}

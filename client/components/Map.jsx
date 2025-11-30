@@ -23,6 +23,7 @@ const MapComponent = () => {
   const visibleLayers = useLayerStore((state) => state.visibleLayers);
   const layerOrder = useLayerStore((state) => state.layerOrder);
   const dataVersion = useLayerStore((state) => state.dataVersion);
+  const setLoading = useLayerStore((state) => state.setLoading);
 
   const [viewState, setViewState] = useState({
     longitude: mapboxSettings.defaultCenter?.lng || -3.7038,
@@ -37,6 +38,7 @@ const MapComponent = () => {
   // Load data from IndexedDB cache or server
   useEffect(() => {
     async function loadData() {
+      setLoading(true);
       try {
         const [cachedStops, cachedShapes] = await Promise.all([
           getCachedStops(callMethod),
@@ -46,10 +48,12 @@ const MapComponent = () => {
         setShapesData(cachedShapes);
       } catch (error) {
         console.error('Failed to load GTFS data:', error);
+      } finally {
+        setLoading(false);
       }
     }
     loadData();
-  }, [dataVersion]);
+  }, [dataVersion, setLoading]);
 
   // Create layer configurations (memoized to prevent recreation)
   const layerConfigs = useMemo(

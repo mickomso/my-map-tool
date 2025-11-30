@@ -1,11 +1,10 @@
 ## [1.4.2](https://github.com/mickomso/my-map-tool/compare/v1.4.1...v1.4.2) (2025-11-30)
 
-
 ### Bug Fixes
 
-* Calculate routes per stop ([1fa3f73](https://github.com/mickomso/my-map-tool/commit/1fa3f7338d794b391885d61d695688074c99e9f6))
-* Redesign stop tooltip ([fa57d7d](https://github.com/mickomso/my-map-tool/commit/fa57d7d47730206dc1cc13837632ee43baa3b3d1))
-* Show routes per stop ([caa0ee0](https://github.com/mickomso/my-map-tool/commit/caa0ee07d85333cddc2165536824f3966e5011b6))
+- Calculate routes per stop ([1fa3f73](https://github.com/mickomso/my-map-tool/commit/1fa3f7338d794b391885d61d695688074c99e9f6))
+- Redesign stop tooltip ([fa57d7d](https://github.com/mickomso/my-map-tool/commit/fa57d7d47730206dc1cc13837632ee43baa3b3d1))
+- Show routes per stop ([caa0ee0](https://github.com/mickomso/my-map-tool/commit/caa0ee07d85333cddc2165536824f3966e5011b6))
 
 ## [1.4.1](https://github.com/mickomso/my-map-tool/compare/v1.4.0...v1.4.1) (2025-11-30)
 
