@@ -7,8 +7,11 @@ export const useLayerStore = create((set) => ({
   },
   layerOrder: ['GTFS Stops', 'GTFS Routes'],
   gtfsData: null,
+  dataVersion: 0, // Increment to trigger data reload
 
   setGtfsData: (data) => set({ gtfsData: data }),
+  
+  triggerDataReload: () => set((state) => ({ dataVersion: state.dataVersion + 1 })),
 
   moveLayerUp: (layerName) =>
     set((state) => {

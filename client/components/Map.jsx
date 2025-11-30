@@ -1,17 +1,26 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Map, { NavigationControl } from 'react-map-gl';
 import { Meteor } from 'meteor/meteor';
-import { useTracker } from 'meteor/react-meteor-data';
 import DeckGL from '@deck.gl/react';
 import { ScatterplotLayer, PathLayer } from '@deck.gl/layers';
-import { Stops, Shapes } from '../../imports/api/gtfs';
 import { useLayerStore } from '../stores/layerStore';
+import { getCachedStops, getCachedShapes } from '../utils/gtfsCache';
 import 'mapbox-gl/dist/mapbox-gl.css';
+
+// Helper to call Meteor methods as promises
+const callMethod = (method, ...args) =>
+  new Promise((resolve, reject) => {
+    Meteor.call(method, ...args, (error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
 
 const MapComponent = () => {
   const mapboxSettings = Meteor.settings.public?.mapbox || {};
   const visibleLayers = useLayerStore((state) => state.visibleLayers);
   const layerOrder = useLayerStore((state) => state.layerOrder);
+  const dataVersion = useLayerStore((state) => state.dataVersion);
 
   const [viewState, setViewState] = useState({
     longitude: mapboxSettings.defaultCenter?.lng || -3.7038,
@@ -19,44 +28,29 @@ const MapComponent = () => {
     zoom: mapboxSettings.defaultZoom || 12,
   });
 
-  // Subscribe to stops data
-  const stops = useTracker(() => {
-    Meteor.subscribe('gtfs.stops');
-    return Stops.find({}).fetch();
-  }, []);
+  const [stops, setStops] = useState([]);
+  const [shapesData, setShapesData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Subscribe to shapes data
-  const shapes = useTracker(() => {
-    Meteor.subscribe('gtfs.shapes');
-    return Shapes.find({}).fetch();
-  }, []);
-
-  // Process shapes data with memoization
-  const shapesData = useMemo(() => {
-    if (shapes.length === 0) {
-      return [];
-    }
-
-    // Group shapes by shape_id
-    const shapesMap = shapes.reduce((acc, shape) => {
-      if (!acc[shape.shape_id]) {
-        acc[shape.shape_id] = [];
+  // Load data from IndexedDB cache or server
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+      try {
+        const [cachedStops, cachedShapes] = await Promise.all([
+          getCachedStops(callMethod),
+          getCachedShapes(callMethod),
+        ]);
+        setStops(cachedStops);
+        setShapesData(cachedShapes);
+      } catch (error) {
+        console.error('Failed to load GTFS data:', error);
+      } finally {
+        setLoading(false);
       }
-      acc[shape.shape_id].push(shape);
-      return acc;
-    }, {});
-
-    // Sort shapes by sequence and create path data
-    return Object.keys(shapesMap).map((shapeId) => {
-      const shapePoints = shapesMap[shapeId].sort(
-        (a, b) => a.shape_pt_sequence - b.shape_pt_sequence
-      );
-      return {
-        shape_id: shapeId,
-        path: shapePoints.map((s) => [s.shape_pt_lon, s.shape_pt_lat]),
-      };
-    });
-  }, [shapes]);
+    }
+    loadData();
+  }, [dataVersion]);
 
   // Create layer configurations (memoized to prevent recreation)
   const layerConfigs = useMemo(
@@ -77,11 +71,6 @@ const MapComponent = () => {
           getRadius: 5,
           getFillColor: [255, 140, 0],
           getLineColor: [0, 0, 0],
-          onHover: ({ object }) => {
-            if (object) {
-              console.log('Stop:', object.stop_name);
-            }
-          },
         }),
       'GTFS Routes': () =>
         new PathLayer({
@@ -91,13 +80,8 @@ const MapComponent = () => {
           widthScale: 5,
           widthMinPixels: 1,
           getPath: (d) => d.path,
-          getColor: [0, 122, 255], // Blue color for routes
+          getColor: [0, 122, 255],
           getWidth: 1.25,
-          onHover: ({ object }) => {
-            if (object) {
-              console.log('Shape ID:', object.shape_id);
-            }
-          },
         }),
     }),
     [stops, shapesData]
