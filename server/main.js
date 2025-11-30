@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { log } from '../utils/logger';
 import { AppLogs } from '../imports/api/logs';
+import { Metadata } from '../imports/api/metadata';
 import { Stops, Shapes } from '../imports/api/gtfs';
 import './methods';
 
@@ -16,10 +17,28 @@ Meteor.publish('app.logs', function () {
   );
 });
 
+// Check if version changed and clear logs if so
+async function checkVersionAndClearLogs(currentVersion) {
+  const storedMeta = await Metadata.findOneAsync({ key: 'appVersion' });
+  const storedVersion = storedMeta?.value;
+
+  if (storedVersion && storedVersion !== currentVersion) {
+    log.info(`Version changed from ${storedVersion} to ${currentVersion}. Clearing app_logs...`);
+    const removed = await AppLogs.removeAsync({});
+    log.info(`Removed ${removed} log entries`);
+  }
+
+  // Update stored version
+  await Metadata.upsertAsync({ key: 'appVersion' }, { $set: { key: 'appVersion', value: currentVersion } });
+}
+
 Meteor.startup(async () => {
   try {
     const version = await Meteor.call('version.get');
     log.info(`Server starting with version ${version}`);
+
+    // Clear logs if version changed
+    await checkVersionAndClearLogs(version);
 
     // Create MongoDB indexes for faster queries
     const shapesCollection = Shapes.rawCollection();
