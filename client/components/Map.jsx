@@ -30,12 +30,10 @@ const MapComponent = () => {
 
   const [stops, setStops] = useState([]);
   const [shapesData, setShapesData] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   // Load data from IndexedDB cache or server
   useEffect(() => {
     async function loadData() {
-      setLoading(true);
       try {
         const [cachedStops, cachedShapes] = await Promise.all([
           getCachedStops(callMethod),
@@ -45,8 +43,6 @@ const MapComponent = () => {
         setShapesData(cachedShapes);
       } catch (error) {
         console.error('Failed to load GTFS data:', error);
-      } finally {
-        setLoading(false);
       }
     }
     loadData();

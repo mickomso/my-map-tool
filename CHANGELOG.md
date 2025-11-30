@@ -7,10 +7,9 @@
 
 ## [1.3.2](https://github.com/mickomso/my-map-tool/compare/v1.3.1...v1.3.2) (2025-11-26)
 
-
 ### Bug Fixes
 
-* Display routes incrementally ([923f645](https://github.com/mickomso/my-map-tool/commit/923f64500db9bc22e76d6e1337f7f9bafd014718))
+- Display routes incrementally ([923f645](https://github.com/mickomso/my-map-tool/commit/923f64500db9bc22e76d6e1337f7f9bafd014718))
 
 ## [1.3.1](https://github.com/mickomso/my-map-tool/compare/v1.3.0...v1.3.1) (2025-11-26)
 

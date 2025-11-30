@@ -10,7 +10,7 @@ export const useLayerStore = create((set) => ({
   dataVersion: 0, // Increment to trigger data reload
 
   setGtfsData: (data) => set({ gtfsData: data }),
-  
+
   triggerDataReload: () => set((state) => ({ dataVersion: state.dataVersion + 1 })),
 
   moveLayerUp: (layerName) =>
