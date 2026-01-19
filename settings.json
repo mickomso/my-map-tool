@@ -1,7 +1,7 @@
 {
   "public": {
     "mapbox": {
-      "accessToken": "pk.eyJ1IjoibWlndWVsY29tcGFueSIsImEiOiJja3l2ZGFxNHIxdzZpMm9vM2tjZGswcGoyIn0.ZVoPHgPE7WpQk3Et4EJWiQ",
+      "accessToken": "ADD_HERE_THE_MAPBOX_TOKEN",
       "defaultCenter": {
         "lng": -3.7038,
         "lat": 40.4168
