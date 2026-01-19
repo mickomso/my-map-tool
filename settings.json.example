@@ -1,7 +1,7 @@
 {
   "public": {
     "mapbox": {
-      "accessToken": "ADD_HERE_THE_MAPBOX_TOKEN",
+      "accessToken": "YOUR_MAPBOX_ACCESS_TOKEN_HERE",
       "defaultCenter": {
         "lng": -3.7038,
         "lat": 40.4168
