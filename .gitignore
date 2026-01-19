@@ -29,3 +29,6 @@ coverage/
 # Misc
 *.swp
 *.swo
+
+# VSCode settings∫
+settings.json
