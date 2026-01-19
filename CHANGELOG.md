@@ -1,3 +1,11 @@
+## [1.4.4](https://github.com/mickomso/my-map-tool/compare/v1.4.3...v1.4.4) (2026-01-19)
+
+
+### Bug Fixes
+
+* Add placeholder in MAPBOX TOKEN ([5adc3f6](https://github.com/mickomso/my-map-tool/commit/5adc3f6904db286d6758d59649bf29397ed1e69c))
+* Remove settings json file from repository ([8a4a472](https://github.com/mickomso/my-map-tool/commit/8a4a472e546950e4e8d1f286ac6d97fed9f53bb1))
+
 ## [1.4.3](https://github.com/mickomso/my-map-tool/compare/v1.4.2...v1.4.3) (2025-11-30)
 
 
